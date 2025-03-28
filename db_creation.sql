@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS Gym (
     gymName TEXT NOT NULL,
     gymOpen TIME NOT NULL,
     gymClose TIME NOT NULL,
-    adminID INT REFERENCES Person(personID),
+    adminID INT REFERENCES Person(userID),
     addressID INT REFERENCES Address(addressID)
 );
 
