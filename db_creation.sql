@@ -1,5 +1,20 @@
 -- sample commit by Ethan (comment)
 
+-- Create Person Table
+-- Note if membership_type already exists delete and dont run create type enum
+CREATE TYPE membership_type AS ENUM('monthly', 'yearly', 'instructor', 'admin');
+
+CREATE TABLE IF NOT EXISTS Person(
+	userID SERIAL PRIMARY KEY,
+	email TEXT UNIQUE NOT NULL,
+	name TEXT NOT NULL,
+	memType membership_type,
+	phone VARCHAR(15) CHECK (phone ~ '^[0-9]{10,15}$'),
+	addressID INT REFERENCES Address(addressID),
+	loginID INT REFERENCES Login(loginID)
+	
+);
+
 
 -- create login table
 
