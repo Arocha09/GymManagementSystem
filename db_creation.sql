@@ -1,7 +1,9 @@
--- sample commit by Ethan (comment)
+-- Gym Project DB Creation and Views
+-- Group 13: Andrew Pavlak, Aiden Rocha, Vance Elliott, Ethan Devarapalli
 
 -- Create Person Table
 -- Note if membership_type already exists delete and dont run create type enum
+
 CREATE TYPE membership_type AS ENUM('monthly', 'yearly', 'instructor', 'admin');
 
 CREATE TABLE IF NOT EXISTS Person(
@@ -17,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Person(
 
 
 -- create login table
+-- loginID should be serial, and username in particular should be unique for each user, but shared passwords could exist
 
 CREATE TABLE IF NOT EXISTS Login (
 	loginID SERIAL PRIMARY KEY,
@@ -26,6 +29,8 @@ CREATE TABLE IF NOT EXISTS Login (
 
 
 -- create address table
+-- split address into each of its parts
+-- see special note for zip code
 
 CREATE TABLE IF NOT EXISTS Address (
 	addressID SERIAL PRIMARY KEY,
@@ -62,7 +67,19 @@ CREATE TABLE IF NOT EXISTS Class(
 	CHECK (endTime > startTime),
 	FOREIGN KEY (instructorID) REFERENCES Person(userID),
     	FOREIGN KEY (gymID) REFERENCES Gym(gymID)
-)
+);
+
+-- create enrollmentList table
+-- composite primary key between both columns, and both are also foreign keys
+-- id references Person.userID, classId references Class.classId
+
+CREATE TABLE IF NOT EXISTS EnrollmentList(
+	id SERIAL,
+	classId SERIAL,
+	PRIMARY KEY (id, classId),
+	FOREIGN KEY (id) REFERENCES Person(userID),
+	FOREIGN KEY (classId) REFERENCES Class(classId),
+);
 
 
 -- Create Facilities Table
