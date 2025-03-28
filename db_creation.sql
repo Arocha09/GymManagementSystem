@@ -48,6 +48,22 @@ CREATE TABLE IF NOT EXISTS Gym (
     addressID INT REFERENCES Address(addressID)
 );
 
+-- Create Class table
+-- Note that the times for start and end time are split into 2 columns
+-- For now, instructorID references Person.userID, and gymID references Gym.gymID, both as foreign keys
+
+CREATE TABLE IF NOT EXISTS Class(
+	classId SERIAL PRIMARY KEY,
+	instructorID SERIAL NOT NULL,
+	gymID SERIAL NOT NULL,
+	className TEXT NOT NULL,
+	startTime TIME NOT NULL,
+	endTime TIME NOT NULL,
+	CHECK (endTime > startTime),
+	FOREIGN KEY (instructorID) REFERENCES Person(userID),
+    	FOREIGN KEY (gymID) REFERENCES Gym(gymID)
+)
+
 
 -- Create Facilities Table
 -- Note time columns for open and close not a single column
