@@ -92,3 +92,67 @@ CREATE TABLE IF NOT EXISTS Facilities(
     facilityClose TIME NOT NULL,
     gymID INT REFERENCES Gym(gymID)
 );
+
+-- Insert data into Login table
+INSERT INTO Login (Username, Password) 
+VALUES
+    ('john_doe', 'password123'),
+    ('jane_doe', 'password456'),
+    ('admin_user', 'adminpassword');
+
+-- Insert data into Address table
+INSERT INTO Address (StName, City, State, Zip)
+VALUES
+    ('123 Elm St', 'Springfield', 'IL', '62701'),
+    ('456 Oak St', 'Champaign', 'IL', '61820'),
+    ('789 Pine St', 'Chicago', 'IL', '60616');
+
+-- Insert data into Person table
+INSERT INTO Person (email, name, memType, phone, addressID, loginID)
+VALUES
+    ('john.doe@example.com', 'John Doe', 'monthly', '5551234567', 1, 1),
+    ('jane.doe@example.com', 'Jane Doe', 'yearly', '5552345678', 2, 2),
+    ('admin@example.com', 'Admin User', 'admin', '5553456789', 3, 3);
+
+-- Insert data into Gym table
+INSERT INTO Gym (gymName, gymOpen, gymClose, adminID, addressID)
+VALUES
+    ('Fitness World', '06:00:00', '22:00:00', 3, 1),
+    ('Powerhouse Gym', '05:00:00', '23:00:00', 3, 2),
+    ('Health Club', '07:00:00', '21:00:00', 3, 3);
+
+-- Insert data into Class table
+INSERT INTO Class (instructorID, gymID, className, startTime, endTime)
+VALUES
+    (1, 1, 'Yoga', '07:00:00', '08:00:00'),
+    (2, 2, 'Spin Class', '08:00:00', '09:00:00'),
+    (3, 3, 'Zumba', '09:00:00', '10:00:00');
+
+-- Insert data into EnrollmentList table
+INSERT INTO EnrollmentList (id, classId)
+VALUES
+    (1, 1),
+    (2, 2),
+    (3, 3);
+
+-- Insert data into Facilities table
+INSERT INTO Facilities (facilityName, facilityOpen, facilityClose, gymID)
+VALUES
+    ('Pool', '06:00:00', '22:00:00', 1),
+    ('Sauna', '07:00:00', '20:00:00', 2),
+    ('Tennis Court', '08:00:00', '21:00:00', 3);
+
+
+-- Creates a view where a user can see each class they're enrolled in, and what times.
+CREATE VIEW MemberClasses AS 
+SELECT className, startTime, endTime 
+FROM ((Person a JOIN EnrollmentList b ON a.userID = b.id ) c
+JOIN Class d ON c.classId = d.classId)
+WHERE userID = '1';
+
+
+-- Creates a view where admin can see how many people are enrolled in each class
+CREATE VIEW numEnrolls AS 
+SELECT a.classId, count(ID)
+FROM (EnrollmentList a JOIN Class b ON a.classId = b.classId)
+GROUP BY a.classId;
