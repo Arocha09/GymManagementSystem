@@ -5,6 +5,12 @@ class DB_Driver():
     def __init__(self):
         self.client = connect_to_postgres_db()
         self.cursor = get_cursor(self.client)
+    
+    def get_class_info(self) -> list:
+        #SQL to return all the classes
+        self.cursor.execute("SELECT * FROM Class")
+        result = self.cursor.fetchall()
+        return result
 
 def connect_to_postgres_db():
     print("connecting to the db")

@@ -1,6 +1,7 @@
-import dbdriver
+from dbdriver import DB_Driver
 
 class Person():
+    
     def __init__(self, user_id, email, name, memtype, phone, address_id, login_id):
         self.userid = user_id
         self.email = email
@@ -9,6 +10,23 @@ class Person():
         self.phone = phone
         self.addressid = address_id
         self.loginid = login_id
+        self.driver = DB_Driver()
+
+    def get_class_table(self):
+        
+        classes_result = self.driver.get_class_info()
+        classes = []
+        for result in classes_result:
+            class_id = result[0]
+            instructor_id = result[1]
+            gym_id = result[2]
+            class_name = result[3]
+            start_time = result[4]
+            end_time = result[5]
+            classes.append(Class(class_id, instructor_id, gym_id, class_name, start_time, end_time))
+        
+        print(classes)
+    
     
 
 class Administrator(Person):
@@ -28,7 +46,12 @@ class Class():
         self.class_name = class_name
         self.start_time = start_time
         self.end_time = end_time
-
+    def __repr__(self):
+        return (
+            f"Class(class_id={self.class_id}, name='{self.class_name}', "
+            f"instructor={self.instructor}, gym={self.gym_id}, "
+            f"start='{self.start_time}', end='{self.end_time}')"
+        )
 
 class EnrollmentList():
     def __init__(self, user_id, class_id):
