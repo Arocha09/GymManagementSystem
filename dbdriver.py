@@ -1,12 +1,21 @@
 import psycopg2
 
 # basic set up code
+class DB_Driver():
+    def __init__(self):
+        self.client = connect_to_postgres_db()
+        self.cursor = get_cursor(self.client)
 
-print("connect to the db")
-client = psycopg2.connect(dbname = "group13", user = "group13", password = "V5ukP3C2", host = "bastion.cs.virginia.edu", port = "5432")
+def connect_to_postgres_db():
+    print("connecting to the db")
+    client = psycopg2.connect(dbname = "group13", user = "group13", password = "V5ukP3C2", host = "bastion.cs.virginia.edu", port = "5432")
+    return client
 
-print("create cursor")
-cursor = client.cursor()
+def get_cursor(client):
+    print("create cursor")
+    cursor = client.cursor()
+    return cursor
+
 
 # after this, remember in the test file to print the query, execute that query, and then fetchall
 # example from test.py
