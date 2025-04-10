@@ -6,7 +6,7 @@ class DB_Driver():
         self.client = connect_to_postgres_db()
         self.cursor = get_cursor(self.client)
 
-    
+    # generic
     def view_personal_info(self, user_id: int) -> dict:
         try:
             self.cursor.execute(
@@ -28,6 +28,21 @@ class DB_Driver():
         except Exception as e:
             print(f"Error retrieving personal info for user {user_id}:", e)
             return {}
+    
+    def update_personal_info(self, user_id: int, column: str, new_value) -> None:
+        try:
+            allowed_fields = ['email', 'name', 'memType', 'phone', 'addressID', 'loginID']
+            if column not in allowed_fields:
+                raise ValueError(f"Cannot update field '{column}'")
+
+            query = f"UPDATE Person SET {column} = %s WHERE userID = %s"
+            self.cursor.execute(query, (new_value, user_id))
+            self.client.commit()
+            print(f"Updated {column} for user {user_id} to {new_value}")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error updating personal info for user {user_id}:", e)
+
 
 
 
@@ -302,20 +317,6 @@ def get_cursor(client):
     cursor = client.cursor()
     return cursor
 
-
-# after this, remember in the test file to print the query, execute that query, and then fetchall
-# example from test.py
-# print("SELECT * FROM Person")
-# cursor.execute("SELECT * FROM Person")
-# result = cursor.fetchall()
-# print(result)
-
-
-
-
-
-
-# Instructor Queries
 
 
 
