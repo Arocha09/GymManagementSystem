@@ -29,19 +29,24 @@ class DB_Driver():
             print(f"Error retrieving personal info for user {user_id}:", e)
             return {}
     
-    def update_personal_info(self, user_id: int, column: str, new_value) -> None:
+    def update_personal_info(self, user_id: int, updates: dict) -> None:
         try:
             allowed_fields = ['email', 'name', 'memType', 'phone', 'addressID', 'loginID']
-            if column not in allowed_fields:
-                raise ValueError(f"Cannot update field '{column}'")
+            for column in updates:
+                if column not in allowed_fields:
+                    raise ValueError(f"Invalid field: {column}")
 
-            query = f"UPDATE Person SET {column} = %s WHERE userID = %s"
-            self.cursor.execute(query, (new_value, user_id))
+            set_clause = ", ".join([f"{k} = %s" for k in updates])
+            values = list(updates.values()) + [user_id]
+
+            query = f"UPDATE Person SET {set_clause} WHERE userID = %s"
+            self.cursor.execute(query, values)
             self.client.commit()
-            print(f"Updated {column} for user {user_id} to {new_value}")
+            print(f"Updated info for user {user_id}")
         except Exception as e:
             self.client.rollback()
-            print(f"Error updating personal info for user {user_id}:", e)
+            print("Error updating personal info:", e)
+
 
 
 
