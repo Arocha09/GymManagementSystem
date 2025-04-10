@@ -33,6 +33,10 @@ class Person():
         for key, value in info.items():
             print(f"{key}: {value}")
         return info
+
+    def update_personal_info(self, column, new_value):
+        self.driver.update_personal_info(self.userid, column, new_value)
+        setattr(self, column.lower(), new_value)  # update local object too!
     
     
 
