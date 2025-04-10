@@ -72,6 +72,32 @@ class Instructor(Person):
     pass
 
 class Member(Person):
+    def view_my_classes(self):
+        results = self.driver.get_enrolled_classes(self.userid)
+        classes = []
+        for result in results:
+            class_id = result[0]
+            instructor_id = result[1]
+            gym_id = result[2]
+            class_name = result[3]
+            start_time = result[4]
+            end_time = result[5]
+            classes.append(Class(class_id, instructor_id, gym_id, class_name, start_time, end_time))
+
+        print("You are enrolled in:")
+        for c in classes:
+            print(c)
+        return classes
+
+    def enroll_in_class(self, class_id):
+        self.driver.enroll_in_class(self.userid, class_id)
+
+    def unenroll_from_class(self, class_id):
+        self.driver.unenroll_from_class(self.userid, class_id)
+
+    def change_membership_type(self, new_type):
+        self.driver.change_membership_type(self.userid, new_type)
+        self.memtype = new_type  # update local attribute to be consistent
     pass
 
 class Class():
