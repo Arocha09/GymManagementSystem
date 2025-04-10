@@ -6,7 +6,7 @@ class DB_Driver():
         self.client = connect_to_postgres_db()
         self.cursor = get_cursor(self.client)
 
-    # generic
+    # generic for all 3
     def view_personal_info(self, user_id: int) -> dict:
         try:
             self.cursor.execute(
@@ -46,6 +46,100 @@ class DB_Driver():
         except Exception as e:
             self.client.rollback()
             print("Error updating personal info:", e)
+    
+    
+    # Member queries
+
+    # SQL to view classes the member is enrolled in (member only)
+    def get_enrolled_classes(self, member_id: int) -> list:
+        try:
+            self.cursor.execute(
+                """
+                SELECT c.*
+                FROM Class c
+                JOIN EnrollmentList e ON c.classId = e.classId
+                WHERE e.id = %s
+                """,
+                (member_id,)
+            )
+            return self.cursor.fetchall()
+        except Exception as e:
+            print(f"Error retrieving enrolled classes for member {member_id}:", e)
+            return []
+    
+    # SQL to enroll in a class (member only)
+    def enroll_in_class(self, member_id: int, class_id: int) -> None:
+        try:
+            # get start and end time
+            self.cursor.execute(
+                "SELECT startTime, endTime FROM Class WHERE classId = %s",
+                (class_id,)
+            )
+            new_class = self.cursor.fetchone()
+            if not new_class:
+                print("Class does not exist.")
+                return
+
+            new_start, new_end = new_class
+
+            # use the existing method to get all enrolled classes
+            existing_classes = self.get_enrolled_classes(member_id)
+
+            # check for time conflict
+            for _, _, _, _, start, end in existing_classes:
+                if not (new_end <= start or new_start >= end):
+                    print("Time conflict! Enrollment blocked.")
+                    return
+
+            # insert into EnrollmentList
+            self.cursor.execute(
+                "INSERT INTO EnrollmentList (id, classId) VALUES (%s, %s)",
+                (member_id, class_id)
+            )
+            self.client.commit()
+            print(f"Member {member_id} successfully enrolled in class {class_id}.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error enrolling member {member_id} in class {class_id}:", e)
+    
+    # SQL for unenrolling from a class (member only)
+    def unenroll_from_class(self, member_id: int, class_id: int) -> None:
+        try:
+            self.cursor.execute(
+                """
+                DELETE FROM EnrollmentList
+                WHERE id = %s AND classId = %s
+                """,
+                (member_id, class_id)
+            )
+            if self.cursor.rowcount == 0:
+                print(f"No enrollment found for member {member_id} in class {class_id}.")
+            else:
+                self.client.commit()
+                print(f"Member {member_id} successfully unenrolled from class {class_id}.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error unenrolling member {member_id} from class {class_id}:", e)
+
+
+    
+    def change_membership_type(self, member_id: int, new_type: str) -> None:
+        try:
+            if new_type not in ('monthly', 'yearly'):
+                raise ValueError("Invalid membership type")
+
+            self.cursor.execute(
+                "UPDATE Person SET memType = %s WHERE userID = %s",
+                (new_type, member_id)
+            )
+            self.client.commit()
+            print(f"Membership type changed to {new_type} for user {member_id}")
+        except Exception as e:
+            self.client.rollback()
+            print("Error changing membership type:", e)
+
+
+
 
 
 
