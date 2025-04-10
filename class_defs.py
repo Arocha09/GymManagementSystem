@@ -34,9 +34,11 @@ class Person():
             print(f"{key}: {value}")
         return info
 
-    def update_personal_info(self, column, new_value):
-        self.driver.update_personal_info(self.userid, column, new_value)
-        setattr(self, column.lower(), new_value)  # update local object too!
+    def update_personal_info(self, updates: dict):
+        self.driver.update_personal_info(self.userid, updates)
+        for key, value in updates.items():
+            setattr(self, key.lower(), value)  # sync local object!
+
     
     
 
