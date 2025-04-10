@@ -6,11 +6,35 @@ class DB_Driver():
         self.client = connect_to_postgres_db()
         self.cursor = get_cursor(self.client)
 
+    
+    def view_personal_info(self, user_id: int) -> dict:
+        try:
+            self.cursor.execute(
+                """
+                SELECT userID, email, name, memType, phone, addressID, loginID
+                FROM Person
+                WHERE userID = %s
+                """,
+                (user_id,)
+            )
+            result = self.cursor.fetchone()
+            if result is None:
+                print(f"No user found with ID {user_id}")
+                return {}
+
+            keys = ['userID', 'email', 'name', 'memType', 'phone', 'addressID', 'loginID']
+            return dict(zip(keys, result)) # save as dict
+
+        except Exception as e:
+            print(f"Error retrieving personal info for user {user_id}:", e)
+            return {}
+
+
 
     # Administrator queries
     
+    # SQL to return all classes (admin and instructors only)
     def get_class_info(self) -> list:
-        #SQL to return all the classes
         self.cursor.execute("SELECT * FROM Class")
         result = self.cursor.fetchall()
         return result # this method is ALSO necessary for instructors
@@ -47,9 +71,8 @@ class DB_Driver():
 
     
 
-    
+    # SQL to get all instructor info (admin only)
     def get_instructor_info(self) -> list:
-        # SQL for admin to get instructor info
         self.cursor.execute("SELECT * FROM Person WHERE memtype = 'instructor'")
         result = self.cursor.fetchall()
         return result
@@ -96,56 +119,157 @@ class DB_Driver():
             self.client.rollback()
             print(f"Error deleting instructor {user_id}:", e)
 
-    
+    # SQL for admin to get member info (admin only, for now)
     def get_member_info(self) -> list:
-        # SQL for admin to get member info
         self.cursor.execute("SELECT * FROM Person WHERE memtype = 'monthly' OR memtype = 'yearly'")
         result = self.cursor.fetchall()
         return result
     
-    def add_member(self) -> list:
-        # SQL for admin to add a member
-        self.cursor.execute ("UPDATE Person SET memtype = 'monthly' AND") # could also use insert statement here, also need to specify whether monthly or yearly
-        result = self.cursor.fetchall()
-        return result
-    
-    def delete_member(self) -> list:
-        # SQL for admin to delete a member
-        # somehow define what the admin wants to delete??
-        self.cursor.execute("DELETE FROM Person WHERE memtype = 'monthly' OR 'yearly' ")
-        result = self.cursor.fetchall()
-        return result
-    
-    def change_gym_open_hours(self) -> list:
-        # SQL for admin to change gym opening hours
-        self.cursor.execute ("UPDATE gymOpen TO ")
-        result = self.cursor.fetchall()
-        return result
-    
-    def change_gym_close_hours(self) -> list:
-        # SQL for admin to change gym closing hours
-        self.cursor.execute ("UPDATE gymClose TO ")
-        result = self.cursor.fetchall()
-        return result
-    
-    
+    # SQL to add member (admin only)
+    def add_member(self, email: str, name: str, memtype: str, phone: str, st_name: str, city: str, state: str, zip_code: str, username: str, password: str) -> None:
+        try:
+            if memtype not in ('monthly', 'yearly'):
+                raise ValueError("Membership type must be 'monthly' or 'yearly'")
+
+            self.cursor.execute(
+                "INSERT INTO Login (Username, Password) VALUES (%s, %s) RETURNING loginID",
+                (username, password)
+            )
+            login_id = self.cursor.fetchone()[0] # add login
+
+            self.cursor.execute(
+                "INSERT INTO Address (StName, City, State, Zip) VALUES (%s, %s, %s, %s) RETURNING addressID",
+                (st_name, city, state, zip_code)
+            )
+            address_id = self.cursor.fetchone()[0] # add user address
+
+            self.cursor.execute(
+                """
+                INSERT INTO Person (email, name, memType, phone, addressID, loginID)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                (email, name, memtype, phone, address_id, login_id)
+            ) # add previous info into Person
+
+            self.client.commit()
+            print("Member successfully added.")
+        except Exception as e:
+            self.client.rollback()
+            print("Error adding member:", e)
+
+    # SQL to delete member (admin only)
+    def delete_member(self, user_id: int) -> None:
+        try:
+            self.cursor.execute(
+                """
+                DELETE FROM Person 
+                WHERE userID = %s AND (memType = 'monthly' OR memType = 'yearly')
+                """,
+                (user_id,)
+            )
+            self.client.commit()
+            print(f"Member {user_id} deleted successfully.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error deleting member {user_id}:", e)
+
+    # SQL to change gym opening hours (admin only)
+    def change_gym_open_hours(self, gym_id: int, new_open_time: str) -> None:
+        try:
+            self.cursor.execute(
+                "UPDATE Gym SET gymOpen = %s WHERE gymID = %s",
+                (new_open_time, gym_id)
+            )
+            self.client.commit()
+            print(f"Gym {gym_id} open time updated to {new_open_time}.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error updating open hours for gym {gym_id}:", e)
+
+    # SQL to change gym close hours (admin only)
+    def change_gym_close_hours(self, gym_id: int, new_close_time: str) -> None:
+        try:
+            self.cursor.execute(
+                "UPDATE Gym SET gymClose = %s WHERE gymID = %s",
+                (new_close_time, gym_id)
+            )
+            self.client.commit()
+            print(f"Gym {gym_id} close time updated to {new_close_time}.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error updating close hours for gym {gym_id}:", e)
+
+    # SQL to get all facilities (admin and instructors)
     def get_facilities_list(self) -> list:
-        # SQL to get all facilities from facilities table
         self.cursor.execute("SELECT * FROM Facilities")
         result = self.cursor.fetchall()
         return result # also necessary for all instructors
     
-    def add_facility(self) -> list:
-        # SQL to add a facility
-        self.cursor.execute("INSERT INTO Facilities ______")
-        result = self.cursor.fetchall()
-        return result
-    
-    def delete_facility(self) -> list:
-        # SQL to delete a facility
-        self.cursor.execute("DELETE FROM Facilities ______")
-        result = self.cursor.fetchall()
-        return result
+    # SQL to add facility (admin only)
+    def add_facility(self, facility_name: str, open_time: str, close_time: str, gym_id: int) -> None:
+        try:
+            self.cursor.execute(
+                """
+                INSERT INTO Facilities (facilityName, facilityOpen, facilityClose, gymID)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (facility_name, open_time, close_time, gym_id)
+            )
+            self.client.commit()
+            print("Facility successfully added.")
+        except Exception as e:
+            self.client.rollback()
+            print("Error adding facility:", e)
+
+    # SQL to delete facility (admin only)
+    def delete_facility(self, facility_id: int) -> None:
+        try:
+            self.cursor.execute(
+                "DELETE FROM Facilities WHERE facilityID = %s",
+                (facility_id,)
+            )
+            self.client.commit()
+            print(f"Facility {facility_id} deleted successfully.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error deleting facility {facility_id}:", e)
+
+
+    # Instructor queries (note that there are some admin queries also for instructors)
+
+    # SQL to add a member to a class (instructors, maybe admins as well)
+    def add_member_to_class(self, member_id: int, class_id: int) -> None:
+        try:
+            self.cursor.execute(
+                """
+                INSERT INTO EnrollmentList (id, classId)
+                VALUES (%s, %s)
+                """,
+                (member_id, class_id)
+            )
+            self.client.commit()
+            print(f"Member {member_id} added to class {class_id}.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error adding member {member_id} to class {class_id}:", e)
+
+    # SQL to delete a member from a class (instructors, maybe admins as well)
+    def remove_member_from_class(self, member_id: int, class_id: int) -> None:
+        try:
+            self.cursor.execute(
+                """
+                DELETE FROM EnrollmentList
+                WHERE id = %s AND classId = %s
+                """,
+                (member_id, class_id)
+            )
+            self.client.commit()
+            print(f"Member {member_id} removed from class {class_id}.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error removing member {member_id} from class {class_id}:", e)
+
+
     
 
     
@@ -170,11 +294,6 @@ def get_cursor(client):
 # cursor.execute("SELECT * FROM Person")
 # result = cursor.fetchall()
 # print(result)
-
-
-# Administrator Queries
-# connect_to_postgres_db()
-# get_cursor()
 
 
 
