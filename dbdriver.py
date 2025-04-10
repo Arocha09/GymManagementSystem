@@ -47,6 +47,26 @@ class DB_Driver():
             self.client.rollback()
             print("Error updating personal info:", e)
     
+    def update_login_info(self, login_id: int, new_username: str = None, new_password: str = None) -> None:
+        try:
+            if new_username:
+                self.cursor.execute("SELECT loginID FROM Login WHERE Username = %s", (new_username,))
+                if self.cursor.fetchone():
+                    print("Username already taken.")
+                    return # check unique username
+
+                self.cursor.execute("UPDATE Login SET Username = %s WHERE loginID = %s", (new_username, login_id)) # otherwise change username
+
+            if new_password:
+                self.cursor.execute("UPDATE Login SET Password = %s WHERE loginID = %s", (new_password, login_id)) # change password
+
+            self.client.commit()
+            print("Login info successfully updated.")
+        except Exception as e:
+            self.client.rollback()
+            print("Error updating login info:", e)
+
+    
 
     # Member queries
 
