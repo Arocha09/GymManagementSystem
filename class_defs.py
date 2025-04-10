@@ -26,6 +26,13 @@ class Person():
             classes.append(Class(class_id, instructor_id, gym_id, class_name, start_time, end_time))
         
         print(classes)
+
+    def view_personal_info(self):
+        info = self.driver.view_personal_info(self.userid)
+        print("Your Personal Info:")
+        for key, value in info.items():
+            print(f"{key}: {value}")
+        return info
     
     
 
@@ -33,6 +40,11 @@ class Administrator(Person):
     pass
 
 class Instructor(Person):
+    def add_member_to_class(self, member_id, class_id):
+        self.driver.add_member_to_class(member_id, class_id)
+
+    def remove_member_from_class(self, member_id, class_id):
+        self.driver.remove_member_from_class(member_id, class_id)
     pass
 
 class Member(Person):
