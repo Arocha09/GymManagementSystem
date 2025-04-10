@@ -268,6 +268,21 @@ class DB_Driver():
         except Exception as e:
             self.client.rollback()
             print(f"Error removing member {member_id} from class {class_id}:", e)
+    
+    def get_instructor_classes(self, instructor_id: int) -> list:
+        try:
+            self.cursor.execute(
+                """
+                SELECT * FROM Class
+                WHERE instructorID = %s
+                """,
+                (instructor_id,)
+            )
+            return self.cursor.fetchall()
+        except Exception as e:
+            print(f"Error retrieving classes for instructor {instructor_id}:", e)
+            return []
+
 
 
     
