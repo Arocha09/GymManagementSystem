@@ -5,12 +5,43 @@ class DB_Driver():
     def __init__(self):
         self.client = connect_to_postgres_db()
         self.cursor = get_cursor(self.client)
+
+
+    # Administrator queries
     
     def get_class_info(self) -> list:
         #SQL to return all the classes
         self.cursor.execute("SELECT * FROM Class")
         result = self.cursor.fetchall()
         return result
+    
+    def add_class(self) -> list:
+        # SQL for admin to add a class
+        # somehow read in new information???
+        self.cursor.execute("UPDATE ")
+        result = self.cursor.fetchall()
+        return result
+    
+    def delete_class(self) -> list:
+        # SQL for admin to delete a class
+        # somehow define what the admin wants to delete??
+        self.cursor.execute("DELETE FROM CLASS WHERE ")
+        result = self.cursor.fetchall()
+        return result
+    
+    def get_instructor_info(self) -> list:
+        # SQL for admin to get instructor info
+        self.cursor.execute("SELECT name FROM Class JOIN PERSON ON Class.instructorID = Person.userID")
+        result = self.cursor.fetchall()
+        return result
+    
+    def get_facilities_list(self) -> list: # make sure this gets pushed 
+        # SQL to get all facilities from facilities table
+        self.cursor.execute("SELECT * FROM Facilities")
+        result = self.cursor.fetchall()
+        return result
+    
+
 
 def connect_to_postgres_db():
     print("connecting to the db")
@@ -32,6 +63,9 @@ def get_cursor(client):
 
 
 # Administrator Queries
+# connect_to_postgres_db()
+# get_cursor()
+
 
 
 
