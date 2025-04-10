@@ -47,7 +47,7 @@ class DB_Driver():
             self.client.rollback()
             print("Error updating personal info:", e)
     
-    
+
     # Member queries
 
     # SQL to view classes the member is enrolled in (member only)
@@ -122,7 +122,7 @@ class DB_Driver():
             print(f"Error unenrolling member {member_id} from class {class_id}:", e)
 
 
-    
+    # SQL to change membership type (members only, for now)
     def change_membership_type(self, member_id: int, new_type: str) -> None:
         try:
             if new_type not in ('monthly', 'yearly'):
