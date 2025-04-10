@@ -96,7 +96,7 @@ class Facilities():
             facility_open_time = result[2]
             facility_close_time = result[3]
             facility_gym_id = result[4]
-            facilities.append(Class(facility_id, facility_name, facility_open_time, facility_close_time, facility_gym_id))
+            facilities.append(Facilities(facility_id, facility_name, facility_open_time, facility_close_time, facility_gym_id))
         
         print(facilities)
 
