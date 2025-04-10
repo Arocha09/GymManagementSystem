@@ -38,6 +38,13 @@ class Person():
         self.driver.update_personal_info(self.userid, updates)
         for key, value in updates.items():
             setattr(self, key.lower(), value)  # sync local object!
+    
+    def update_login_info(self, new_username=None, new_password=None):
+        self.driver.update_login_info(self.loginid, new_username, new_password)
+        if new_username:
+            self.username = new_username
+        if new_password:
+            self.password = new_password
 
     
     
