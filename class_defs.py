@@ -84,6 +84,21 @@ class Facilities():
         self.facility_open = facility_open
         self.facility_close = facility_close
         self.gym_id = gym_id
+    
+
+    def get_facilities_list(self):
+        
+        facilities_result = self.driver.get_facilities_list()
+        facilities = []
+        for result in facilities_result:
+            facility_id = result[0]
+            facility_name = result[1]
+            facility_open_time = result[2]
+            facility_close_time = result[3]
+            facility_gym_id = result[4]
+            facilities.append(Class(facility_id, facility_name, facility_open_time, facility_close_time, facility_gym_id))
+        
+        print(facilities)
 
 class Login():
     def __init__(self, login_id, username, password):
