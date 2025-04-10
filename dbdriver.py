@@ -185,7 +185,12 @@ class DB_Driver():
     def get_class_info(self) -> list:
         self.cursor.execute("SELECT * FROM Class")
         result = self.cursor.fetchall()
-        return result # this method is ALSO necessary for instructors
+        keys = ['classid', 'instructorid', 'gymid', 'classname', 'starttime', 'endtime']
+        classes = []
+        for r in result:
+            classes.append(dict(zip(keys, r)))
+
+        return classes # this method is ALSO necessary for instructors
     
     # SQL for admin to add a class with all the right information
     def add_class(self, instructor_id: int, gym_id: int, class_name: str, start_time: str, end_time: str) -> None:

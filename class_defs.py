@@ -15,17 +15,7 @@ class Person():
     def get_class_table(self):
         
         classes_result = self.driver.get_class_info()
-        classes = []
-        for result in classes_result:
-            class_id = result[0]
-            instructor_id = result[1]
-            gym_id = result[2]
-            class_name = result[3]
-            start_time = result[4]
-            end_time = result[5]
-            classes.append(Class(class_id, instructor_id, gym_id, class_name, start_time, end_time))
-        
-        print(classes)
+        print(classes_result)
 
     def view_personal_info(self):
         info = self.driver.view_personal_info(self.userid)
