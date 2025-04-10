@@ -45,6 +45,24 @@ class Instructor(Person):
 
     def remove_member_from_class(self, member_id, class_id):
         self.driver.remove_member_from_class(member_id, class_id)
+    
+
+    def view_my_classes(self):
+        results = self.driver.get_instructor_classes(self.userid)
+        classes = []
+        for result in results:
+            class_id = result[0]
+            instructor_id = result[1]
+            gym_id = result[2]
+            class_name = result[3]
+            start_time = result[4]
+            end_time = result[5]
+            classes.append(Class(class_id, instructor_id, gym_id, class_name, start_time, end_time))
+
+        print("Your Classes:")
+        for c in classes:
+            print(c)
+        return classes
     pass
 
 class Member(Person):
