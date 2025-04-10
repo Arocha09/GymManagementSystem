@@ -66,6 +66,20 @@ class DB_Driver():
             self.client.rollback()
             print("Error updating login info:", e)
 
+    def get_login_details(self, username, password):
+        self.cursor.execute("SELECT loginid FROM login WHERE username = %s AND password = %s", (username, password))
+        login_result = self.cursor.fetchall()
+        login_keys = ['loginid', 'username', 'password']
+        login = dict(zip(login_keys, login_result))
+        
+        self.cursor.execute("SELECT * FROM Person WHERE loginid = %s", (login['loginid']))
+
+        person_result = self.cursor.fetchall()
+        person_keys = ['userID', 'email', 'name', 'memType', 'phone', 'addressID', 'loginID']
+        return dict(zip(person_keys, person_result[0]))
+
+
+
     
 
     # Member queries
