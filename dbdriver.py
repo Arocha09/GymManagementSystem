@@ -69,9 +69,10 @@ class DB_Driver():
     def get_login_details(self, username, password):
         self.cursor.execute("SELECT loginid FROM login WHERE username = %s AND password = %s", (username, password))
         login_result = self.cursor.fetchall()
+        if len(login_result) == 0 :
+            return None
         login_keys = ['loginid', 'username', 'password']
         login = dict(zip(login_keys, login_result))
-        
         self.cursor.execute("SELECT * FROM Person WHERE loginid = %s", (login['loginid']))
 
         person_result = self.cursor.fetchall()

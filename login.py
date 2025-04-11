@@ -2,13 +2,14 @@ from class_defs import Person
 from dbdriver import DB_Driver
 
 
-def login():
-    username = input("Username: ")
-    password = input("Password: ")
+def login(username, password):
 
     driver = DB_Driver()
 
     result = driver.get_login_details(username, password)
+
+    if result == None:
+        return None
 
     user = Person(
         result['userID'],

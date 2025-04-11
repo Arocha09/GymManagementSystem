@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 60%;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">Personal Information</h2>
+    <table>
+        <tr>
+            <th>Field</th>
+            <th>Value</th>
+        </tr>
+        {% for key, value in info.items() %}
+        <tr>
+            <td>{{ key }}</td>
+            <td>{{ value }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2 style="text-align: center;">Classes</h2>
+    {% if classes %}
+    <table>
+        <tr>
+            <th>Class ID</th>
+            <th>Name</th>
+            <th>Instructor</th>
+            <th>Gym</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+        </tr>
+        {% for c in classes %}
+        <tr>
+            <td>{{ c.class_id }}</td>
+            <td>{{ c.class_name }}</td>
+            <td>{{ c.instructor }}</td>
+            <td>{{ c.gym_id }}</td>
+            <td>{{ c.start_time }}</td>
+            <td>{{ c.end_time }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p style="text-align:center;">No classes found for this user.</p>
+    {% endif %}
+
+    </table>
+</body>
+</html>
