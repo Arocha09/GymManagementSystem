@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container { margin-top: 20px; }
+        .dashboard-header { text-align: center; margin-bottom: 40px; }
+        .dashboard-section { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome, Admin! Here you can manage users, classes, and facilities.</p>
+    </div>
+
+    <!-- Manage Users Section -->
+    <div class="dashboard-section">
+        <h2>Manage Users</h2>
+        <p>View and manage class members and instructors.</p>
+        <a href="{{ url_for('manage_users') }}" class="btn btn-primary">Manage Users</a>
+    </div>
+
+    <!-- Manage Classes Section -->
+    <div class="dashboard-section">
+        <h2>Manage Classes</h2>
+        <p>View, add, or edit gym classes and schedules.</p>
+        <a href="{{ url_for('manage_classes') }}" class="btn btn-primary">Manage Classes</a>
+    </div>
+
+    <!-- Manage Facilities Section -->
+    <div class="dashboard-section">
+        <h2>Manage Facilities</h2>
+        <p>View and manage gym facilities and resources.</p>
+        <a href="{{ url_for('manage_facilities') }}" class="btn btn-primary">Manage Facilities</a>
+    </div>
+
+    <!-- Logout Button -->
+    <div class="dashboard-section text-center">
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

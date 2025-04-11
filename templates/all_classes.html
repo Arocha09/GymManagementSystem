@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Gym Classes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        h2 {
+            text-align: center;
+        }
+        .class-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        .class-info {
+            margin-bottom: 10px;
+        }
+        .enroll-form {
+            text-align: right;
+        }
+        .enroll-btn {
+            padding: 10px 15px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .enroll-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h2>All Gym Classes</h2>
+
+{% if not classes %}
+<p style="text-align:center;">No classes available right now.</p>
+{% else %}
+    {% for c in classes %}
+    <div class="class-card">
+        <div class="class-info"><strong>Name:</strong> {{ c.class_name}}</div>
+        <div class="class-info"><strong>Instructor:</strong> {{ c.instructor_id }}</div>
+        <div class="class-info"><strong>Location:</strong> Gym {{ c.gym_id }}</div>
+        <div class="class-info"><strong>Time:</strong> {{ c.start_time }} to {{ c.end_time }}</div>
+
+        {% if session.user_id %}
+            <form class="enroll-form" method="POST" action="{{ url_for('enroll') }}">
+                <input type="hidden" name="class_id" value="{{ c.class_id }}">
+                <button type="submit" class="enroll-btn">
+                    {% if c.class_id in enrolled_ids %}Unenroll{% else %}Enroll{% endif %}
+                </button>
+            </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

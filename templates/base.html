@@ -4,19 +4,27 @@
     <title>Gym System</title>
     <style>
         body { font-family: Arial; margin: 20px; }
-        nav a { margin: 0 10px; }
+        nav a { margin: 0 10px; text-decoration: none; color: #007bff; }
+        nav a:hover { text-decoration: underline; }
         table { width: 80%; margin-top: 20px; border-collapse: collapse; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     </style>
 </head>
 <body>
     <h1>Gym Management Dashboard</h1>
+    
     <nav>
         <a href="/members">Members</a>
         <a href="/instructors">Instructors</a>
         <a href="/facilities">Facilities</a>
         <a href="/classes">Classes</a>
+
+        {% if session.user_id %}
+        <a href="{{ url_for('member_dashboard') }}">My Info</a>  <!-- Point to actual endpoint -->
+        <a href="{{ url_for('logout') }}">Logout</a> 
+        {% endif %}
     </nav>
+
     <hr>
     {% block content %}{% endblock %}
 </body>

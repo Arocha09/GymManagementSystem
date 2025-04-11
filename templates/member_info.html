@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,12 +49,12 @@
         </tr>
         {% for c in classes %}
         <tr>
-            <td>{{ c.class_id }}</td>
-            <td>{{ c.class_name }}</td>
-            <td>{{ c.instructor }}</td>
-            <td>{{ c.gym_id }}</td>
-            <td>{{ c.start_time }}</td>
-            <td>{{ c.end_time }}</td>
+            <td>{{ c['class_id'] }}</td>
+            <td>{{ c['class_name'] }}</td>
+            <td>{{ c['instructor'] }}</td>
+            <td>{{ c['gym_id'] }}</td>
+            <td>{{ c['start_time'] }}</td>
+            <td>{{ c['end_time'] }}</td>
         </tr>
         {% endfor %}
     </table>
@@ -63,3 +65,4 @@
     </table>
 </body>
 </html>
+{% endblock %}
