@@ -1,8 +1,12 @@
 # GymManagementSystem
 Contributors:
+
 Aiden Rocha
+
 Ethan Devarapalli
+
 Vance Elliott
+
 Andrew Pavlak
 
 
