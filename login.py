@@ -1,3 +1,5 @@
+## maybe adding OAuth and password hashing to improve security
+
 from class_defs import Person
 from dbdriver import DB_Driver
 

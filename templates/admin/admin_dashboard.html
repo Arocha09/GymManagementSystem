@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +25,13 @@
     <div class="dashboard-section">
         <h2>Manage Users</h2>
         <p>View and manage class members and instructors.</p>
-        <a href="{{ url_for('manage_users') }}" class="btn btn-primary">Manage Users</a>
+        <a href="{{ url_for('manage_members') }}" class="btn btn-primary">Manage Users</a>
+    </div>
+
+    <div class="dashboard-section">
+        <h2>Manage Instructors</h2>
+        <p>View Instructors</p>
+        <a href="{{ url_for('manage_instructors') }}" class="btn btn-primary">Manage Instructors</a>
     </div>
 
     <!-- Manage Classes Section -->
@@ -40,6 +48,13 @@
         <a href="{{ url_for('manage_facilities') }}" class="btn btn-primary">Manage Facilities</a>
     </div>
 
+    <!-- Manage Gyms Section -->
+    <div class="dashboard-section">
+        <h2>Manage Gyms</h2>
+        <p>View and manage gym branches and locations.</p>
+        <a href="{{ url_for('manage_gyms') }}" class="btn btn-primary">Manage Gyms</a>
+    </div>
+
     <!-- Logout Button -->
     <div class="dashboard-section text-center">
         <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
@@ -52,3 +67,4 @@
 
 </body>
 </html>
+{% endblock %}

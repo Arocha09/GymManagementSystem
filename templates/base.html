@@ -14,9 +14,11 @@
     <h1>Gym Management Dashboard</h1>
     
     <nav>
+        {% if session.memType %}
         <a href="/members">Members</a>
         <a href="/instructors">Instructors</a>
         <a href="/facilities">Facilities</a>
+        {% endif %}
         <a href="/classes">Classes</a>
 
         {% if session.user_id %}

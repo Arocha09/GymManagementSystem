@@ -1,5 +1,10 @@
 import psycopg2
 
+# To complete/improve this class I think we should always return an object on the retrieval queries.
+# Also consider using commit and rollback on some of these methods so that once we go to modify the 
+# database with large amounts of data we dont screw it up.
+
+
 # basic set up code
 class DB_Driver():
     def __init__(self):
@@ -339,6 +344,20 @@ class DB_Driver():
         except Exception as e:
             self.client.rollback()
             print(f"Error updating open hours for gym {gym_id}:", e)
+    
+    def get_gym_list(self, admin_id):
+        try:
+            self.cursor.execute(f"SELECT * FROM Gym WHER adminid = {admin_id}")
+            result = self.cursor.fetchall()
+            
+            
+        
+            return result
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error getting gyms for {admin_id}:", e)
+            
+
 
     # SQL to change gym close hours (admin only)
     def change_gym_close_hours(self, gym_id: int, new_close_time: str) -> None:

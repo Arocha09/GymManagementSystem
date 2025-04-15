@@ -1,5 +1,6 @@
 from dbdriver import DB_Driver
 
+
 class Person():
     
     def __init__(self, user_id, email, name, memtype, phone, address_id, login_id):
@@ -12,10 +13,23 @@ class Person():
         self.loginid = login_id
         self.driver = DB_Driver()
 
+
+
     def get_class_table(self):
         
         classes_result = self.driver.get_class_info()
-        print(classes_result)
+        classes =[]
+        for result in classes_result:
+            c = Class(
+                class_id=result['classid'],
+                instructor_id=result['instructorid'],
+                gym_id=result['gymid'],
+                class_name=result['classname'],
+                start_time = result['starttime'],
+                end_time = result['endtime']
+                )
+            classes.append(c)
+        print(classes)
 
     def view_personal_info(self):
         info = self.driver.view_personal_info(self.userid)
@@ -40,7 +54,20 @@ class Person():
     
 
 class Administrator(Person):
-    pass
+    def get_gyms(self):
+        result = self.driver.get_gym_list(self.userid)
+        gym_list = []
+        for res in result:
+            gym = Gym(  
+                    gym_id = res[0], 
+                    gym_name = res[1], 
+                    gym_open= res[2], 
+                    gym_close= res[3], 
+                    admin_id = res[4], 
+                    address_id= res[5]
+                    )
+            gym_list.append(gym)
+        return gym_list
 
 class Instructor(Person):
     def add_member_to_class(self, member_id, class_id):
@@ -135,6 +162,11 @@ class Gym():
         self.gym_close = gym_close
         self.admin_id = admin_id
         self.address_id = address_id
+
+    def get_gym_keys():
+        return ['gymID', 'gymName', 'gymOpen', 'gymClose', 'adminID', 'addressID']
+    
+    
 
 class Facilities():
     def __init__(self, facility_id, facility_name, facility_open, facility_close, gym_id):
