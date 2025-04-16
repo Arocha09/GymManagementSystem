@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Class</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Edit Class</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Class Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ gym_class.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="instructor">Instructor</label>
+            <input type="text" class="form-control" id="instructor" name="instructor" value="{{ gym_class.instructor }}" required>
+        </div>
+        <div class="form-group">
+            <label for="schedule">Start</label>
+            <input type="text" class="form-control" id="Start" name="Start" value="{{ gym_class.start_time }}" required>
+        </div>
+        <div class="form-group">
+            <label for="schedule">End</label>
+            <input type="text" class="form-control" id="schedule" name="schedule" value="{{ gym_class.end_time}}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('manage_classes') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+</body>
+</html>

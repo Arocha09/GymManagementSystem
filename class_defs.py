@@ -29,7 +29,8 @@ class Person():
                 end_time = result['endtime']
                 )
             classes.append(c)
-        print(classes)
+        
+        return classes
 
     def view_personal_info(self):
         info = self.driver.view_personal_info(self.userid)

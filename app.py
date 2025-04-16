@@ -4,7 +4,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from dbdriver import DB_Driver
 import login
-from class_defs import Member, Person, Administrator, Class
+from class_defs import Member, Person, Administrator, Class, Instructor
 
 app = Flask(__name__)
 app.secret_key = 'dev'  # Replace with a strong secret in prod
@@ -41,22 +41,64 @@ def log_in():
     return render_template("login.html", error=error)
 
 
-def get_logged_in_admin():
-    if 'user_id' not in session or session.get('memType') != 'admin':
+def get_logged_in_user():
+    if 'user_id' not in session:
         return None
-    user_id = session["user_id"]
-    result = db.view_personal_info(user_id)
-    if result and result['memType'] == "admin":
-        return Administrator(
-            result['userID'],
-            result['email'],
-            result['name'],
-            result['memType'],
-            result['phone'],
-            result['addressID'],
-            result['loginID']
-        )
+    else:
+        user_id = session["user_id"]
+        result = db.view_personal_info(user_id)
+        if session.get('memType') == 'admin':
+            if result and result['memType'] == "admin":
+                return Administrator(
+                    result['userID'],
+                    result['email'],
+                    result['name'],
+                    result['memType'],
+                    result['phone'],
+                    result['addressID'],
+                    result['loginID']
+                )
+        elif session.get('memType') == 'instructor':
+            if result and result['memType'] == "instructor":
+                return Instructor(
+                    result['userID'],
+                    result['email'],
+                    result['name'],
+                    result['memType'],
+                    result['phone'],
+                    result['addressID'],
+                    result['loginID']
+                )
+        elif session.get('memType') in ['monthly', 'yearly']:
+            if result and result['memType'] == "monthly" or result['memType'] == 'yearly':
+                return Member(
+                    result['userID'],
+                    result['email'],
+                    result['name'],
+                    result['memType'],
+                    result['phone'],
+                    result['addressID'],
+                    result['loginID']
+                )
     return None
+    
+# Admin Routes
+# def get_logged_in_admin():
+#     if 'user_id' not in session or session.get('memType') != 'admin':
+#         return None
+#     user_id = session["user_id"]
+#     result = db.view_personal_info(user_id)
+#     if result and result['memType'] == "admin":
+#         return Administrator(
+#             result['userID'],
+#             result['email'],
+#             result['name'],
+#             result['memType'],
+#             result['phone'],
+#             result['addressID'],
+#             result['loginID']
+#         )
+#     return None
 
 #TODO: Test
 @app.route('/admin')
@@ -69,13 +111,13 @@ def admin_dashboard():
 #TODO: Test
 @app.route('/admin/gyms')
 def manage_gyms():
-    admin = get_logged_in_admin()
+    admin = get_logged_in_user()
     gyms = admin.get_gyms()
-    return render_template('manage_gyms.html', gyms=gyms)
+    return render_template('admin/manage_gyms.html', gyms=gyms)
 
 @app.route('/admin/members')
 def manage_members():
-    admin = get_logged_in_admin()
+    admin = get_logged_in_user()
     # TODO: Implement
     # #members = admin.get_members() 
     # return render_template('manage_users.html', users=)  # your logic here
@@ -83,7 +125,7 @@ def manage_members():
 
 @app.route('/admin/instructors')
 def manage_instructors():
-    admin = get_logged_in_admin()
+    admin = get_logged_in_user()
     # TODO: Implement
     # #members = admin.get_members() 
     # return render_template('manage_users.html', users=)  # your logic here
@@ -92,14 +134,14 @@ def manage_instructors():
 #TODO: Test
 @app.route('/admin/classes')
 def manage_classes():
-    admin = get_logged_in_admin()
+    admin = get_logged_in_user()
     classes = admin.get_class_table()
     return render_template('admin/manage_classes.html', classes=classes)  # your logic here
 
-@app.route('/admin/classes', methods=['GET', 'POST'])
+@app.route('/classes', methods=['GET', 'POST'])
 def add_class():
     #TODO: Finish implementation
-    admin = get_logged_in_admin()
+    admin = get_logged_in_user()
     if not admin:
         return redirect(url_for('home'))
 
@@ -118,7 +160,7 @@ def add_class():
         return redirect(url_for('add_class'))
 
     # For GET requests, just show the form
-    return render_template('manage_classes.html', admin=admin)
+    return render_template('admin/manage_classes.html', admin=admin)
 
 
 @app.route('/admin/facilities')
@@ -128,30 +170,53 @@ def manage_facilities():
     # return render_template('manage_facilities.html', facilities=...)  # your logic here
 
 
+#Instructor Routes
+# def get_logged_in_instructor():
+#     if 'user_id' not in session or session.get('memType') != 'instructor':
+#         return None
+#     user_id = session["user_id"]
+#     result = db.view_personal_info(user_id)
+#     if result and result['memType'] == "instructor":
+#         return Instructor(
+#             result['userID'],
+#             result['email'],
+#             result['name'],
+#             result['memType'],
+#             result['phone'],
+#             result['addressID'],
+#             result['loginID']
+#         )
+#     return None
 
-# @app.route('/instructor')
-# def instructor_dashboard():
-#     if not session.get('user') or session['user']['memType'] != 'instructor':
-#         return redirect(url_for('home'))
-#     instructor_id = session['user']['id']
-#     classes = db.get_instructor_classes(instructor_id)
-#     return render_template('instructor_dashboard.html', classes=classes)
-def get_logged_in_member():
-    if 'user_id' not in session or session.get('memType') not in ['monthly', 'yearly']:
-        return None
-    user_id = session["user_id"]
-    result = db.view_personal_info(user_id)
-    if result and result['memType'] == "monthly" or result['memType'] == 'yearly':
-        return Member(
-            result['userID'],
-            result['email'],
-            result['name'],
-            result['memType'],
-            result['phone'],
-            result['addressID'],
-            result['loginID']
-        )
-    return None
+@app.route('/instructor')
+def instructor_dashboard():
+    if not session.get('user') or session['memType'] != 'instructor':
+        return redirect(url_for('home'))
+    
+    instructor = get_logged_in_user()
+    classes = instructor.get_class_table()
+    return render_template('instructor/instructor_dashboard.html', classes=classes)
+
+
+
+#Member Routes
+
+# def get_logged_in_member():
+#     if 'user_id' not in session or session.get('memType') not in ['monthly', 'yearly']:
+#         return None
+#     user_id = session["user_id"]
+#     result = db.view_personal_info(user_id)
+#     if result and result['memType'] == "monthly" or result['memType'] == 'yearly':
+#         return Member(
+#             result['userID'],
+#             result['email'],
+#             result['name'],
+#             result['memType'],
+#             result['phone'],
+#             result['addressID'],
+#             result['loginID']
+#         )
+#     return None
 
 @app.route('/member', methods=['GET', 'POST'])
 def member_dashboard():
@@ -159,7 +224,7 @@ def member_dashboard():
     if 'user_id' not in session or session.get('memType') not in ['monthly', 'yearly']:
         return redirect(url_for('home'))
     
-    member = get_logged_in_member()
+    member = get_logged_in_user()
     if member:
         classes = member.view_my_classes()
         return render_template("member/member_info.html", info=member.view_personal_info(), classes=classes)
@@ -193,10 +258,49 @@ def display_classes():
                          classes=classes,
                         )
 
+#Classes Routes
+@app.route('/classes/edit/<int:class_id>', methods=['GET', 'POST'])
+def edit_class(class_id):
+    user = get_logged_in_user()
+    gym_classes = user.get_class_table()
+
+    gym_class = next((c for c in gym_classes if c.class_id == class_id), None)
+    if not gym_class:
+        flash('Class not found.', 'danger')
+        return redirect(url_for('manage_classes'))
+
+    if request.method == 'POST':
+        gym_class['name'] = request.form['name']
+        gym_class['instructor'] = request.form['instructor']
+        gym_class['start'] = request.form['start_time']
+        gym_class['end'] = request.form['end_time']
+        
+        #TODO: Write the edit class file in dbdriver.
+        db.edit_class()
+        flash('Class updated successfully!', 'success')
+        return redirect(url_for('manage_classes'))
+
+    return render_template('classes/edit_class.html', gym_class=gym_class)
+
+
+
+@app.route('/classes/delete/<int:class_id>', methods=['GET'])
+def delete_class(class_id):
+    global gym_classes
+    gym_classes = [c for c in gym_classes if c.class_id != class_id]
+    db.delete_class(class_id=class_id)
+    flash('Class deleted successfully.', 'success')
+    return redirect(url_for('manage_classes'))
+
+
+
+#Login and Register Routes
+
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('home'))
+
 
 
 # @app.route('/register', methods=['GET', 'POST'])

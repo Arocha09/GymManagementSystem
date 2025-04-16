@@ -16,20 +16,21 @@
                 <th>Class ID</th>
                 <th>Class Name</th>
                 <th>Instructor</th>
-                <th>Schedule</th>
-                <th>Actions</th>
+                <th>Start</th>
+                <th>End</th>
             </tr>
         </thead>
         <tbody>
             {% for gym_class in classes %}
             <tr>
-                <td>{{ gym_class.id }}</td>
-                <td>{{ gym_class.name }}</td>
-                <td>{{ gym_class.instructor }}</td>
-                <td>{{ gym_class.schedule }}</td>
+                <td>{{ gym_class.class_id }}</td>
+                <td>{{ gym_class.class_name }}</td>
+                <td>{{ gym_class.instructor_id }}</td>
+                <td>{{ gym_class.start_time}}</td>
+                <td>{{ gym_class.end_time}}</td>
                 <td>
-                    <a href="{{ url_for('edit_class', class_id=gym_class.id) }}" class="btn btn-primary btn-sm">Edit</a>
-                    <a href="{{ url_for('delete_class', class_id=gym_class.id) }}" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="{{ url_for('edit_class', class_id=gym_class.class_id) }}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{{ url_for('delete_class', class_id=gym_class.class_id) }}" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
             {% endfor %}
