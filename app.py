@@ -167,19 +167,29 @@ def instructor_dashboard():
     classes = instructor.get_class_table()
     return render_template('instructor/instructor_dashboard.html', classes=classes)
 
-@app.route('/instructor/classes')
-def view_classes():
-    instructor = get_logged_in_user()
-    classes = instructor.get_class_table()
-    return render_template('admin/manage_classes.html', classes=classes)
+# @app.route('/instructor/classes')
+# def view_classes():
+#     instructor = get_logged_in_user()
+#     classes = instructor.get_class_table()
+#     return render_template('admin/manage_classes.html', classes=classes)
 
 
-@app.route('/instructor/enrollments')
-def view_enrollments():
+# @app.route('/instructor/enrollments')
+# def view_enrollments():
+#     instructor = get_logged_in_user()
+#     #TODO: the get_enrollments needs to be coded
+#     enrollments = instructor.get_enrollments() 
+#     return render_template('instructor/view_enrollments.html', enrollments=enrollments)
+
+@app.route('/instructor/classes_and_enrollments')
+def view_classes_and_enrollments():
+    if not session.get("user_id"):
+        return redirect(url_for('home'))
     instructor = get_logged_in_user()
-    #TODO: the get_enrollments needs to be coded
-    enrollments = instructor.get_enrollments() 
-    return render_template('instructor/view_enrollments.html', enrollments=enrollments)
+    enrollments = instructor.get_enrollments()  # uses your code above
+
+    return render_template('instructor/classes_and_enrollments.html', classes=enrollments)
+
 
 
 

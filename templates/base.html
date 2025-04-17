@@ -14,20 +14,36 @@
     <h1>Gym Management Dashboard</h1>
     
     <nav>
-        {% if session.memType %}
-        <a href="/members">Members</a>
-        <a href="/instructors">Instructors</a>
-        <a href="/facilities">Facilities</a>
+        {% if session.memType == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}">Admin Home</a>
+            <a href="{{ url_for('manage_members') }}">Members</a>
+            <a href="{{ url_for('manage_instructors') }}">Instructors</a>
+            <a href="{{ url_for('manage_facilities') }}">Facilities</a>
+            <a href="{{ url_for('manage_classes') }}">Classes</a>
+
+        {% elif session.memType == 'instructor' %}
+            <a href="{{ url_for('instructor_dashboard') }}">Instructor Home</a>
+            <a href = "{{ url_for('view_classes_and_enrollments') }}"> Classes and Enrollments</a>
+
+        {% elif session.memType == 'monthly' or session.memType == 'yearly' %}
+            <a href="{{ url_for('member_dashboard') }}">My Info</a>
+            <a href="{{ url_for('all_classes') }}">Available Classes</a>
+            <a href="{{ url_for('my_enrollments') }}">My Enrollments</a>
+
+        {% else %}
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
         {% endif %}
-        <a href="/classes">Classes</a>
 
         {% if session.user_id %}
-        <a href="{{ url_for('member_dashboard') }}">My Info</a>  <!-- Point to actual endpoint -->
-        <a href="{{ url_for('logout') }}">Logout</a> 
+            <a href="{{ url_for('logout') }}">Logout</a>
         {% endif %}
     </nav>
 
     <hr>
+
     {% block content %}{% endblock %}
 </body>
 </html>
+

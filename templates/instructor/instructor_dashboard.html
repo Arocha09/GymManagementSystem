@@ -21,18 +21,11 @@
         <p>Welcome, Instructor! Here you can manage your classes and view student enrollments.</p>
     </div>
 
-    <!-- View Classes Section -->
+    <!-- View Classes & Enrollments Combined Section -->
     <div class="dashboard-section">
-        <h2>Your Classes</h2>
-        <p>View your current and upcoming classes, and manage your students.</p>
-        <a href="{{ url_for('view_classes') }}" class="btn btn-primary">View Classes</a>
-    </div>
-
-    <!-- View Student Enrollments Section -->
-    <div class="dashboard-section">
-        <h2>Student Enrollments</h2>
-        <p>View students enrolled in your classes and track their progress.</p>
-        <a href="{{ url_for('view_enrollments') }}" class="btn btn-primary">View Enrollments</a>
+        <h2>Your Classes & Enrollments</h2>
+        <p>View your current classes and see which students are enrolled in each.</p>
+        <a href="{{ url_for('view_classes_and_enrollments') }}" class="btn btn-primary">View Classes & Enrollments</a>
     </div>
 
     <!-- Create New Class Section -->
@@ -55,3 +48,4 @@
 </body>
 </html>
 {% endblock %}
+
