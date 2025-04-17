@@ -94,6 +94,14 @@ class Instructor(Person):
         for c in classes:
             print(c)
         return classes
+    
+    def get_enrollments(self):
+        classes = self.view_my_classes()
+        class_ids = [c.class_id for c in classes ]
+        class_names = [c.class_name for c in classes]
+        enrollments = self.driver.get_enrollment_lists(class_ids, class_names)
+
+        return enrollments
     pass
 
 class Member(Person):

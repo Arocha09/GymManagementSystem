@@ -455,6 +455,40 @@ class DB_Driver():
         except Exception as e:
             print(f"Error retrieving classes for instructor {instructor_id}:", e)
             return []
+    
+    def get_enrollment_lists(self, ids, names):
+        try:
+            enrollment_list = []
+            for x in range(len(ids)):
+                self.cursor.execute(
+                    """
+                    SELECT Person.name, Person.email FROM Person 
+                    JOIN enrollmentlist ON Person.userID = enrollmentlist.userID
+                    WHERE enrollmentlist.class_id = %s
+                    """, (ids[x],)
+                    )
+                members = self.cursor.fetchall()
+                cl = names[x]
+
+                dictionary = {
+                    "class_name": cl,
+                    "members": []
+                }
+
+                for member in members:
+                    name = member[0]  # person name
+                    email = member[1]  # person email
+                    dictionary["members"].append({
+                        "student_name": name,
+                        "student_email": email
+                })
+
+                enrollment_list.append(dictionary)
+
+            return enrollment_list
+        except Exception as e:
+            print(f"Error retrieving enrollments for classes {ids}: {e}")
+            return []
 
 
 

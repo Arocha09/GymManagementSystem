@@ -33,8 +33,8 @@ def log_in():
                 return redirect(url_for('member_dashboard'))
             elif user_struct["memType"] == 'admin':
                 return redirect(url_for('admin_dashboard'))
-            # elif user_struct["memType"] == 'instructor':
-            #     return redirect(url_for('instructor_dashboard'))
+            elif user_struct["memType"] == 'instructor':
+                return redirect(url_for('instructor_dashboard'))
         else:
             error = "Invalid credentials. Please try again."
 
@@ -83,22 +83,6 @@ def get_logged_in_user():
     return None
     
 # Admin Routes
-# def get_logged_in_admin():
-#     if 'user_id' not in session or session.get('memType') != 'admin':
-#         return None
-#     user_id = session["user_id"]
-#     result = db.view_personal_info(user_id)
-#     if result and result['memType'] == "admin":
-#         return Administrator(
-#             result['userID'],
-#             result['email'],
-#             result['name'],
-#             result['memType'],
-#             result['phone'],
-#             result['addressID'],
-#             result['loginID']
-#         )
-#     return None
 
 #TODO: Test
 @app.route('/admin')
@@ -171,52 +155,36 @@ def manage_facilities():
 
 
 #Instructor Routes
-# def get_logged_in_instructor():
-#     if 'user_id' not in session or session.get('memType') != 'instructor':
-#         return None
-#     user_id = session["user_id"]
-#     result = db.view_personal_info(user_id)
-#     if result and result['memType'] == "instructor":
-#         return Instructor(
-#             result['userID'],
-#             result['email'],
-#             result['name'],
-#             result['memType'],
-#             result['phone'],
-#             result['addressID'],
-#             result['loginID']
-#         )
-#     return None
 
 @app.route('/instructor')
 def instructor_dashboard():
-    if not session.get('user') or session['memType'] != 'instructor':
+    print(session)
+    if 'user_id' not in session or session['memType'] != 'instructor':
         return redirect(url_for('home'))
     
     instructor = get_logged_in_user()
+    instructor.view_personal_info()
     classes = instructor.get_class_table()
     return render_template('instructor/instructor_dashboard.html', classes=classes)
+
+@app.route('/instructor/classes')
+def view_classes():
+    instructor = get_logged_in_user()
+    classes = instructor.get_class_table()
+    return render_template('admin/manage_classes.html', classes=classes)
+
+
+@app.route('/instructor/enrollments')
+def view_enrollments():
+    instructor = get_logged_in_user()
+    #TODO: the get_enrollments needs to be coded
+    enrollments = instructor.get_enrollments() 
+    return render_template('instructor/view_enrollments.html', enrollments=enrollments)
+
 
 
 
 #Member Routes
-
-# def get_logged_in_member():
-#     if 'user_id' not in session or session.get('memType') not in ['monthly', 'yearly']:
-#         return None
-#     user_id = session["user_id"]
-#     result = db.view_personal_info(user_id)
-#     if result and result['memType'] == "monthly" or result['memType'] == 'yearly':
-#         return Member(
-#             result['userID'],
-#             result['email'],
-#             result['name'],
-#             result['memType'],
-#             result['phone'],
-#             result['addressID'],
-#             result['loginID']
-#         )
-#     return None
 
 @app.route('/member', methods=['GET', 'POST'])
 def member_dashboard():

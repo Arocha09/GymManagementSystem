@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +39,7 @@
     <div class="dashboard-section">
         <h2>Create New Class</h2>
         <p>Plan and create new gym classes for your schedule.</p>
-        <a href="{{ url_for('create_class') }}" class="btn btn-primary">Create New Class</a>
+        <a href="{{ url_for('add_class') }}" class="btn btn-primary">Add Class</a>
     </div>
 
     <!-- Logout Button -->
@@ -52,3 +54,4 @@
 
 </body>
 </html>
+{% endblock %}
