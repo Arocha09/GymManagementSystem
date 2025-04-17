@@ -3,42 +3,109 @@
 <head>
     <title>Register</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
         form {
-            width: 300px;
-            margin: 100px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            width: 400px;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        input[type="text"], input[type="password"], input[type="email"], select {
+
+        form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin: 12px 0 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        select {
             width: 100%;
-            padding: 8px;
-            margin: 5px 0 10px;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
+
         input[type="submit"] {
             width: 100%;
-            padding: 8px;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        p {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
     <form method="POST">
         <h2>Register</h2>
+
         {% if error %}
-            <p style="color:red;">{{ error }}</p>
+            <p>{{ error }}</p>
         {% endif %}
-        
-        <label>Username:</label>
-        <input type="text" name="username" required>
-        
-        <label>Password:</label>
-        <input type="password" name="password" required>
-        
-        <label>Email:</label>
-        <input type="email" name="email" required>
-        
-        <label>Membership Type:</label>
-        <select name="memType" required>
+
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+
+        <label for="name">Full Name</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="phone">Phone Number</label>
+        <input type="text" name="phone" id="phone" required>
+
+        <label for="st_name">Street Name</label>
+        <input type="text" name="st_name" id="st_name" required>
+
+        <label for="city">City</label>
+        <input type="text" name="city" id="city" required>
+
+        <label for="state">State</label>
+        <input type="text" name="state" id="state" required>
+
+        <label for="zip">Zip Code</label>
+        <input type="text" name="zip" id="zip" required>
+
+        <label for="memType">Membership Type</label>
+        <select name="memType" id="memType" required>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
         </select>

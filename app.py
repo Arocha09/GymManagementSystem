@@ -4,7 +4,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from dbdriver import DB_Driver
 import login
-from class_defs import Member, Person, Administrator, Class, Instructor
+from class_defs import Member, Person, Administrator, Class, Instructor, Address, Login
 
 app = Flask(__name__)
 app.secret_key = 'dev'  # Replace with a strong secret in prod
@@ -236,6 +236,8 @@ def display_classes():
                          classes=classes,
                         )
 
+
+
 #Classes Routes
 @app.route('/classes/edit/<int:class_id>', methods=['GET', 'POST'])
 def edit_class(class_id):
@@ -281,25 +283,63 @@ def logout():
 
 
 
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if request.method == 'POST':
-#         username = request.form.get('username')
-#         password = request.form.get('password')
-#         email = request.form.get('email')
-#         mem_type = request.form.get('memType')
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        name = request.form.get('name')
+        phone = request.form.get('phone')
+        st_name = request.form.get('st_name')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        zip_code = request.form.get('zip')  # renamed to avoid shadowing Python's zip()
+        username = request.form.get('username')
+        password = request.form.get('password')
+        mem_type = request.form.get('memType')
 
-#         # Validate inputs (this part can be extended based on your requirements)
-#         if not username or not password or not email:
-#             return render_template('register.html', error="All fields are required.")
+        # Basic validation
+        if not all([email, name, phone, st_name, city, state, zip_code, username, password, mem_type]):
+            return render_template('register.html', error="All fields are required.")
 
-#         # Call db.create_login() and db.create_person() to save the user in the database
-#         db.create_login(username, password, email, mem_type)  # You should implement this
-#         db.create_person(username, email, mem_type)  # Create additional user data if needed
-        
-#         return redirect(url_for('home'))  # Redirect to login or home page after successful registration
-    
-#     return render_template('register.html')
+        try:
+            # Create address and insert into DB
+            address = Address(
+                address_id=None,  # or None if auto-incremented
+                st_name=st_name,
+                city=city,
+                state=state,
+                zip=zip_code
+            )
+            address_id = address.add_address()
+
+            # Create login and insert into DB
+            login = Login(
+                login_id=None,  # or None if auto-incremented
+                username=username,
+                password=password
+            )
+            login_id = login.add_login()
+
+            # Create user and insert into DB
+            new_user = Person(
+                user_id=None,  # or None if auto-incremented
+                email=email,
+                name=name,
+                memtype=mem_type,
+                phone=phone,
+                address_id=address_id,
+                login_id=login_id
+            )
+            new_user.add_person()  # Assuming you have this method defined
+
+            return redirect(url_for('home'))
+
+        except Exception as e:
+            # Log the error if needed
+            print(f"Registration error: {e}")
+            return render_template('register.html', error="An error occurred while creating your account. Please try again.")
+
+    return render_template('register.html')
 
 
 if __name__ == '__main__':

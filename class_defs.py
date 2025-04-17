@@ -161,6 +161,11 @@ class Address():
         self.city = city
         self.state = state
         self.zip = zip
+        self.driver = DB_Driver()
+    
+    def add_address(self):
+        return self.driver.add_address(self.st_name, self.city, self.state, self.zip)
+    
 
 
 class Gym():
@@ -205,3 +210,7 @@ class Login():
         self.login_id = login_id
         self.username = username
         self.password = password
+        self.driver = DB_Driver()
+    
+    def add_login(self):
+        return self.driver.add_login(self.username, self.password)

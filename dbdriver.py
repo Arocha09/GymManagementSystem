@@ -489,6 +489,48 @@ class DB_Driver():
         except Exception as e:
             print(f"Error retrieving enrollments for classes {ids}: {e}")
             return []
+        
+
+        #Login/Register
+    def add_login(self, username, password):
+        try:
+            self.cursor.execute("""
+                INSERT INTO login (username, password)
+                VALUES (%s, %s)
+                RETURNING id;
+                """, (username, password))
+
+            login_id = self.cursor.fetchone()[0]
+            self.client.commit()
+
+            return login_id
+
+        except Exception as e:
+            self.client.rollback()
+            print(f"Failed to add login Username: {username} Password: {password}: {e}")
+            return None
+
+
+    
+    #address
+    def add_address(self, st_name, city, state, zip):
+        try:
+            self.cursor.execute("""
+                INSERT INTO address (stname, city, state, zip)
+                VALUES (%s, %s, %s, %s)
+                RETURNING id;
+                """, (st_name, city, state, zip))
+
+            address_id = self.cursor.fetchone()[0]
+            self.client.commit()
+
+            return address_id
+
+        except Exception as e:
+            self.client.rollback()  # Undo the transaction if it failed
+            print(f"Failed to add address: {st_name} {city} {state} {zip}: {e}")
+            return None
+
 
 
 
