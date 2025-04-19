@@ -17,6 +17,11 @@ CREATE TABLE IF NOT EXISTS Person(
 	
 );
 
+-- ALTER TABLE Person
+--  ADD CONSTRAINT uq_person_usermem UNIQUE(userID, memType);
+-- code to alter table to force unique constraint on both userID & memType which are linked
+
+
 
 -- create login table
 -- loginID should be serial, and username in particular should be unique for each user, but shared passwords could exist
@@ -91,6 +96,25 @@ CREATE TABLE IF NOT EXISTS Facilities(
     facilityOpen TIME NOT NULL,
     facilityClose TIME NOT NULL,
     gymID INT REFERENCES Gym(gymID)
+);
+
+
+-- create the gymEnrollment table, which links members with gyms
+-- note that id is the new primary key of this table, which is just a serial that links userID and gymID
+-- otherwise, userID is from Person.userID, and introduce a constraint that makes sure it's only members being filtered here
+-- gymID is from Gym.gymID
+
+CREATE TABLE IF NOT EXISTS GymEnrollment(
+    id SERIAL PRIMARY KEY,
+    userID INT NOT NULL,
+    gymID INT NOT NULL,
+    memType membership_type NOT NULL,
+
+    CONSTRAINT chk_memtype CHECK (memType IN ('monthly','yearly')),
+    CONSTRAINT fk_person_member
+        FOREIGN KEY (userID, memType) REFERENCES Person(userID, memType),
+    CONSTRAINT fk_gym
+        FOREIGN KEY (gymID) REFERENCES Gym(gymID)
 );
 
 -- Insert data into Login table
