@@ -52,7 +52,6 @@ class Person():
             self.password = new_password
 
     
-    
 
 class Administrator(Person):
     def get_gyms(self):

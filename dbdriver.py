@@ -83,6 +83,8 @@ class DB_Driver():
         person_result = self.cursor.fetchall()
         person_keys = ['userID', 'email', 'name', 'memType', 'phone', 'addressID', 'loginID']
         return dict(zip(person_keys, person_result[0]))
+    
+    
 
 
 
@@ -497,7 +499,7 @@ class DB_Driver():
             self.cursor.execute("""
                 INSERT INTO login (username, password)
                 VALUES (%s, %s)
-                RETURNING id;
+                RETURNING loginid;
                 """, (username, password))
 
             login_id = self.cursor.fetchone()[0]
@@ -518,7 +520,7 @@ class DB_Driver():
             self.cursor.execute("""
                 INSERT INTO address (stname, city, state, zip)
                 VALUES (%s, %s, %s, %s)
-                RETURNING id;
+                RETURNING addressid;
                 """, (st_name, city, state, zip))
 
             address_id = self.cursor.fetchone()[0]

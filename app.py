@@ -283,6 +283,64 @@ def logout():
 
 
 
+# @app.route('/register', methods=['GET', 'POST'])
+# def register():
+#     if request.method == 'POST':
+#         email = request.form.get('email')
+#         name = request.form.get('name')
+#         phone = request.form.get('phone')
+#         st_name = request.form.get('st_name')
+#         city = request.form.get('city')
+#         state = request.form.get('state')
+#         zip_code = request.form.get('zip')  # renamed to avoid shadowing Python's zip()
+#         username = request.form.get('username')
+#         password = request.form.get('password')
+#         mem_type = request.form.get('memType')
+
+#         # Basic validation
+#         if not all([email, name, phone, st_name, city, state, zip_code, username, password, mem_type]):
+#             return render_template('register.html', error="All fields are required.")
+
+#         try:
+#             # Create address and insert into DB
+#             address = Address(
+#                 address_id=None,  # or None if auto-incremented
+#                 st_name=st_name,
+#                 city=city,
+#                 state=state,
+#                 zip=zip_code
+#             )
+#             address_id = address.add_address()
+
+#             # Create login and insert into DB
+#             login = Login(
+#                 login_id=None,  # or None if auto-incremented
+#                 username=username,
+#                 password=password
+#             )
+#             login_id = login.add_login()
+
+#             # Create user and insert into DB
+#             new_user = Person(
+#                 user_id=None,  # or None if auto-incremented
+#                 email=email,
+#                 name=name,
+#                 memtype=mem_type,
+#                 phone=phone,
+#                 address_id=address_id,
+#                 login_id=login_id
+#             )
+#             new_user.add_person()  # Assuming you have this method defined
+
+#             return redirect(url_for('home'))
+
+#         except Exception as e:
+#             # Log the error if needed
+#             print(f"Registration error: {e}")
+#             return render_template('register.html', error="An error occurred while creating your account. Please try again.")
+
+#     return render_template('register.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -302,35 +360,9 @@ def register():
             return render_template('register.html', error="All fields are required.")
 
         try:
-            # Create address and insert into DB
-            address = Address(
-                address_id=None,  # or None if auto-incremented
-                st_name=st_name,
-                city=city,
-                state=state,
-                zip=zip_code
-            )
-            address_id = address.add_address()
-
-            # Create login and insert into DB
-            login = Login(
-                login_id=None,  # or None if auto-incremented
-                username=username,
-                password=password
-            )
-            login_id = login.add_login()
-
-            # Create user and insert into DB
-            new_user = Person(
-                user_id=None,  # or None if auto-incremented
-                email=email,
-                name=name,
-                memtype=mem_type,
-                phone=phone,
-                address_id=address_id,
-                login_id=login_id
-            )
-            new_user.add_person()  # Assuming you have this method defined
+            # Call the add_member method to handle address, login, and person creation
+             # Assuming you have an instance of the Person class
+            db.add_member(email, name, mem_type, phone, st_name, city, state, zip_code, username, password)
 
             return redirect(url_for('home'))
 
@@ -340,6 +372,7 @@ def register():
             return render_template('register.html', error="An error occurred while creating your account. Please try again.")
 
     return render_template('register.html')
+
 
 
 if __name__ == '__main__':
