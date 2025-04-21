@@ -102,10 +102,80 @@ def manage_gyms():
 @app.route('/admin/members')
 def manage_members():
     admin = get_logged_in_user()
-    # TODO: Implement
-    # #members = admin.get_members() 
-    # return render_template('manage_users.html', users=)  # your logic here
-    pass
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    raw = admin.driver.get_member_info()
+    users = [{
+        'id':    row[0],
+        'email': row[1],
+        'name':  row[2],
+        'role':  row[3]
+    } for row in raw]
+
+    return render_template('admin/manage_members.html', users=users)
+
+@app.route('/admin/members/add', methods=['GET', 'POST'])
+def add_user():
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        email    = request.form['email']
+        name     = request.form['name']
+        memtype  = request.form['role']      # “monthly” or “yearly”
+        phone    = request.form['phone']
+        st_name  = request.form['st_name']
+        city     = request.form['city']
+        state    = request.form['state']
+        zip_code = request.form['zip']
+        username = request.form['username']
+        password = request.form['password']
+
+        # This uses your existing DB_Driver.add_member
+        admin.driver.add_member(
+            email, name, memtype, phone,
+            st_name, city, state, zip_code,
+            username, password
+        )
+        flash('Member added successfully!', 'success')
+        return redirect(url_for('manage_members'))
+
+    return render_template('admin/add_user.html')
+
+@app.route('/admin/members/edit/<int:user_id>', methods=['GET', 'POST'])
+def edit_user(user_id):
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        updates = {
+            'email':   request.form['email'],
+            'name':    request.form['name'],
+            'memType': request.form['role'],
+            'phone':   request.form['phone']
+        }
+        # Update the Person row
+        admin.driver.update_personal_info(user_id, updates)
+        flash('Member updated successfully!', 'success')
+        return redirect(url_for('manage_members'))
+
+    # GET: load current info
+    user = admin.driver.view_personal_info(user_id)
+    return render_template('admin/edit_user.html', user=user)
+
+@app.route('/admin/members/delete/<int:user_id>')
+def delete_user(user_id):
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    admin.driver.delete_member(user_id)
+    flash('Member deleted successfully!', 'success')
+    return redirect(url_for('admin/manage_members'))
+
 
 @app.route('/admin/instructors')
 def manage_instructors():

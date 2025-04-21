@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Edit Member</h2>
+  <form method="POST">
+    <div class="form-group">
+      <label>Email</label>
+      <input class="form-control" name="email" value="{{ user.email }}" required>
+    </div>
+    <div class="form-group">
+      <label>Name</label>
+      <input class="form-control" name="name" value="{{ user.name }}" required>
+    </div>
+    <div class="form-group">
+      <label>Role</label>
+      <select class="form-control" name="role" required>
+        <option value="monthly" {% if user.memType == 'monthly' %}selected{% endif %}>Monthly</option>
+        <option value="yearly"  {% if user.memType == 'yearly'  %}selected{% endif %}>Yearly</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Phone</label>
+      <input class="form-control" name="phone" value="{{ user.phone }}" required>
+    </div>
+
+    <button class="btn btn-primary">Save Changes</button>
+    <a href="{{ url_for('manage_members') }}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}
