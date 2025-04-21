@@ -124,7 +124,7 @@ def add_user():
     if request.method == 'POST':
         email    = request.form['email']
         name     = request.form['name']
-        memtype  = request.form['role']      # “monthly” or “yearly”
+        memtype  = request.form['role']      
         phone    = request.form['phone']
         st_name  = request.form['st_name']
         city     = request.form['city']
@@ -133,7 +133,6 @@ def add_user():
         username = request.form['username']
         password = request.form['password']
 
-        # This uses your existing DB_Driver.add_member
         admin.driver.add_member(
             email, name, memtype, phone,
             st_name, city, state, zip_code,
@@ -180,10 +179,77 @@ def delete_user(user_id):
 @app.route('/admin/instructors')
 def manage_instructors():
     admin = get_logged_in_user()
-    # TODO: Implement
-    # #members = admin.get_members() 
-    # return render_template('manage_users.html', users=)  # your logic here
-    pass
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    # Returns list of tuples: (userID, email, name, memType, phone, addressID, loginID)
+    raw = admin.driver.get_instructor_info()
+    users = [{
+        'id':    row[0],
+        'email': row[1],
+        'name':  row[2],
+        'phone': row[4]
+    } for row in raw]
+
+    return render_template('admin/manage_instructors.html', users=users)
+
+@app.route('/admin/instructors/add', methods=['GET', 'POST'])
+def add_instructor():
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        email    = request.form['email']
+        name     = request.form['name']
+        phone    = request.form['phone']
+        st_name  = request.form['st_name']
+        city     = request.form['city']
+        state    = request.form['state']
+        zip_code = request.form['zip']
+        username = request.form['username']
+        password = request.form['password']
+
+        admin.driver.add_instructor(
+            email, name, phone,
+            st_name, city, state, zip_code,
+            username, password
+        )
+        flash('Instructor added successfully!', 'success')
+        return redirect(url_for('manage_instructors'))
+
+    return render_template('admin/add_instructor.html')
+
+
+@app.route('/admin/instructors/edit/<int:user_id>', methods=['GET', 'POST'])
+def edit_instructor(user_id):
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        updates = {
+            'email': request.form['email'],
+            'name':  request.form['name'],
+            'phone': request.form['phone']
+        }
+        admin.driver.update_personal_info(user_id, updates)
+        flash('Instructor updated successfully!', 'success')
+        return redirect(url_for('manage_instructors'))
+
+    user = admin.driver.view_personal_info(user_id)
+    return render_template('admin/edit_instructor.html', user=user)
+
+
+@app.route('/admin/instructors/delete/<int:user_id>')
+def delete_instructor(user_id):
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    admin.driver.delete_instructor(user_id)
+    flash('Instructor deleted successfully!', 'success')
+    return redirect(url_for('admin/manage_instructors'))
 
 #TODO: Test
 @app.route('/admin/classes')
