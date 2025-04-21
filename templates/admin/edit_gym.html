@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Edit Gym</h2>
+  <form method="POST">
+    <div class="form-group">
+      <label>Name</label>
+      <input class="form-control" name="name" value="{{ gym.gymName }}" required>
+    </div>
+    <div class="form-group">
+      <label>Open Time</label>
+      <input class="form-control" name="open_time" value="{{ gym.gymOpen }}" required>
+    </div>
+    <div class="form-group">
+      <label>Close Time</label>
+      <input class="form-control" name="close_time" value="{{ gym.gymClose }}" required>
+    </div>
+    <div class="form-group">
+      <label>Address ID</label>
+      <input class="form-control" name="address_id" type="number" value="{{ gym.addressID }}" required>
+    </div>
+    <button class="btn btn-primary">Save Changes</button>
+    <a href="{{ url_for('manage_gyms') }}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

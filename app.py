@@ -96,8 +96,73 @@ def admin_dashboard():
 @app.route('/admin/gyms')
 def manage_gyms():
     admin = get_logged_in_user()
-    gyms = admin.get_gyms()
-    return render_template('admin/manage_gyms.html', gyms=gyms)
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    raw = admin.driver.get_gym_list(admin.userid)
+    gyms = [{
+        'id':         r[0],
+        'name':       r[1],
+        'open_time':  r[2],
+        'close_time': r[3],
+        'address_id': r[5]
+    } for r in raw]
+
+    return render_template('admin/manage_gyms.html', gyms=gyms) 
+
+@app.route('/admin/gyms/add', methods=['GET','POST'])
+def add_gym():
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        name       = request.form['name']
+        open_time  = request.form['open_time']
+        close_time = request.form['close_time']
+        address_id = request.form['address_id']
+
+        admin.driver.add_gym(name, open_time, close_time, admin.userid, address_id)
+        flash('Gym added successfully!', 'success')
+        return redirect(url_for('admin/manage_gyms'))
+
+    return render_template('admin/add_gym.html')
+
+
+@app.route('/admin/gyms/edit/<int:gym_id>', methods=['GET','POST'])
+def edit_gym(gym_id):
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        name       = request.form['name']
+        open_time  = request.form['open_time']
+        close_time = request.form['close_time']
+        address_id = request.form['address_id']
+
+        admin.driver.update_gym(gym_id, name, open_time, close_time, address_id)
+        flash('Gym updated successfully!', 'success')
+        return redirect(url_for('admin/manage_gyms'))
+
+    gym = admin.driver.get_gym_by_id(gym_id)
+    if not gym:
+        flash('Gym not found.', 'danger')
+        return redirect(url_for('admin/manage_gyms'))
+
+    return render_template('admin/edit_gym.html', gym=gym)
+
+
+@app.route('/admin/gyms/delete/<int:gym_id>')
+def delete_gym(gym_id):
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    admin.driver.delete_gym(gym_id)
+    flash('Gym deleted successfully!', 'success')
+    return redirect(url_for('admin/manage_gyms'))
+
 
 @app.route('/admin/members')
 def manage_members():
