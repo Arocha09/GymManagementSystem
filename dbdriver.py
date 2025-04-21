@@ -349,7 +349,7 @@ class DB_Driver():
     
     def get_gym_list(self, admin_id):
         try:
-            self.cursor.execute(f"SELECT * FROM Gym WHER adminid = {admin_id}")
+            self.cursor.execute(f"SELECT * FROM Gym WHERE adminid = {admin_id}")
             result = self.cursor.fetchall()
             
             
@@ -373,6 +373,86 @@ class DB_Driver():
         except Exception as e:
             self.client.rollback()
             print(f"Error updating close hours for gym {gym_id}:", e)
+
+    # SQL to get gym by id (admin only)
+    def get_gym_by_id(self, gym_id: int) -> dict:
+
+        try:
+            self.cursor.execute(
+                """
+                SELECT gymid, gymname, gymopen, gymclose, adminid, addressid
+                FROM gym
+                WHERE gymid = %s
+                """,
+                (gym_id,)
+            )
+            row = self.cursor.fetchone()
+            if not row:
+                return {}
+            keys = ['gymid', 'gymname', 'gymopen', 'gymclose', 'adminid', 'addressid']
+            return dict(zip(keys, row))
+        except Exception as e:
+            print(f"Error retrieving gym {gym_id}:", e)
+            return {}
+
+    # SQL to add gym (admin only)
+    def add_gym(self,
+                gymname: str,
+                gymopen: str,
+                gymclose: str,
+                adminid: int,
+                addressid: int) -> None:
+        try:
+            self.cursor.execute(
+                """
+                INSERT INTO gym (gymname, gymopen, gymclose, adminid, addressid)
+                VALUES (%s, %s, %s, %s, %s)
+                """,
+                (gymname, gymopen, gymclose, adminid, addressid)
+            )
+            self.client.commit()
+            print("Gym added successfully.")
+        except Exception as e:
+            self.client.rollback()
+            print("Error adding gym:", e)
+
+    # SQL to update gym (admin only)
+    def update_gym(self,
+                   gym_id: int,
+                   gymname: str,
+                   gymopen: str,
+                   gymclose: str,
+                   addressid: int) -> None:
+        try:
+            self.cursor.execute(
+                """
+                UPDATE gym
+                   SET gymname   = %s,
+                       gymopen   = %s,
+                       gymclose  = %s,
+                       addressid = %s
+                 WHERE gymid = %s
+                """,
+                (gymname, gymopen, gymclose, addressid, gym_id)
+            )
+            self.client.commit()
+            print(f"Gym {gym_id} updated successfully.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error updating gym {gym_id}:", e)
+
+    # SQL to delete gym (admin only)
+    def delete_gym(self, gym_id: int) -> None:
+        try:
+            self.cursor.execute(
+                "DELETE FROM gym WHERE gymid = %s",
+                (gym_id,)
+            )
+            self.client.commit()
+            print(f"Gym {gym_id} deleted.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error deleting gym {gym_id}:", e)
 
     # SQL to get all facilities (admin and instructors)
     def get_facilities_list(self) -> list:
