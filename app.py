@@ -285,9 +285,70 @@ def add_class():
 
 @app.route('/admin/facilities')
 def manage_facilities():
-    pass 
-    #TODO: Implement
-    # return render_template('manage_facilities.html', facilities=...)  # your logic here
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    raw = admin.driver.get_facilities_list()
+    facilities = [{
+        'id':     r[0],
+        'name':   r[1],
+        'open':   r[2],
+        'close':  r[3],
+        'gym_id': r[4]
+    } for r in raw]
+
+    return render_template('admin/manage_facilities.html', facilities=facilities)
+
+
+@app.route('/admin/facilities/add', methods=['GET','POST'])
+def add_facility():
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        name       = request.form['name']
+        open_time  = request.form['open_time']
+        close_time = request.form['close_time']
+        gym_id     = request.form['gym_id']
+
+        admin.driver.add_facility(name, open_time, close_time, gym_id)
+        flash('Facility added successfully!', 'success')
+        return redirect(url_for('manage_facilities'))
+
+    return render_template('admin/add_facility.html')
+
+@app.route('/admin/facilities/edit/<int:facility_id>', methods=['GET','POST'])
+def edit_facility(facility_id):
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        name       = request.form['name']
+        open_time  = request.form['open_time']
+        close_time = request.form['close_time']
+        gym_id     = request.form['gym_id']
+
+        admin.driver.update_facility(facility_id, name, open_time, close_time, gym_id)
+        flash('Facility updated successfully!', 'success')
+        return redirect(url_for('manage_facilities'))
+
+    facility = admin.driver.get_facility_by_id(facility_id)
+    return render_template('admin/edit_facility.html', facility=facility)
+
+
+@app.route('/admin/facilities/delete/<int:facility_id>')
+def delete_facility(facility_id):
+    admin = get_logged_in_user()
+    if not admin or session.get('memType') != 'admin':
+        return redirect(url_for('home'))
+
+    admin.driver.delete_facility(facility_id)
+    flash('Facility deleted successfully!', 'success')
+    return redirect(url_for('manage_facilities'))
+
 
 
 #Instructor Routes

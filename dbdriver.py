@@ -380,6 +380,55 @@ class DB_Driver():
         result = self.cursor.fetchall()
         return result # also necessary for all instructors
     
+    # SQL to get facility by id (admin only)
+    def get_facility_by_id(self, facility_id: int) -> dict:
+        try:
+            self.cursor.execute(
+                """
+                SELECT facilityID, facilityName, facilityOpen, facilityClose, gymID
+                FROM Facilities
+                WHERE facilityID = %s
+                """,
+                (facility_id,)
+            )
+            row = self.cursor.fetchone()
+            if row is None:
+                return {}
+
+            keys = ['id', 'name', 'open', 'close', 'gym_id']
+            return dict(zip(keys, row))
+
+        except Exception as e:
+            print(f"Error retrieving facility {facility_id}:", e)
+            return {}
+        
+    # SQL to update facility (admin only)
+    def update_facility(self,
+                        facility_id: int,
+                        name: str,
+                        open_time: str,
+                        close_time: str,
+                        gym_id: int) -> None:
+
+        try:
+            self.cursor.execute(
+                """
+                UPDATE Facilities
+                   SET facilityName = %s,
+                       facilityOpen = %s,
+                       facilityClose = %s,
+                       gymID = %s
+                 WHERE facilityID = %s
+                """,
+                (name, open_time, close_time, gym_id, facility_id)
+            )
+            self.client.commit()
+            print(f"Facility {facility_id} updated successfully.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error updating facility {facility_id}:", e)
+
+    
     # SQL to add facility (admin only)
     def add_facility(self, facility_name: str, open_time: str, close_time: str, gym_id: int) -> None:
         try:

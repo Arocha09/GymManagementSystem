@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Add New Facility</h2>
+  <form method="POST">
+    <div class="form-group">
+      <label>Name</label>
+      <input class="form-control" name="name" required>
+    </div>
+    <div class="form-group">
+      <label>Open Time</label>
+      <input class="form-control" name="open_time" placeholder="HH:MM" required>
+    </div>
+    <div class="form-group">
+      <label>Close Time</label>
+      <input class="form-control" name="close_time" placeholder="HH:MM" required>
+    </div>
+    <div class="form-group">
+      <label>Gym ID</label>
+      <input class="form-control" name="gym_id" type="number" required>
+    </div>
+    <button class="btn btn-success">Add Facility</button>
+    <a href="{{ url_for('manage_facilities') }}"
+       class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}
