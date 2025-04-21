@@ -221,7 +221,7 @@ def enroll():
     return redirect(url_for('member_dashboard'))
 
 @app.route("/classes")
-def display_classes():
+def all_classes():
     result = db.get_class_info()
     classes = []
     for item in result:
@@ -340,6 +340,14 @@ def logout():
 #             return render_template('register.html', error="An error occurred while creating your account. Please try again.")
 
 #     return render_template('register.html')
+
+@app.route('/my_enrollments')
+def my_enrollments():
+    member = get_logged_in_user()
+    if not member: return redirect(url_for('home'))
+    classes = member.view_my_classes()
+    return render_template('member/my_enrollments.html', classes=classes)
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
