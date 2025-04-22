@@ -238,7 +238,7 @@ def delete_user(user_id):
 
     admin.driver.delete_member(user_id)
     flash('Member deleted successfully!', 'success')
-    return redirect(url_for('admin/manage_members'))
+    return redirect(url_for('manage_members'))
 
 
 @app.route('/admin/instructors')
