@@ -10,13 +10,19 @@
     </div>
     <div class="form-group">
       <label>Open Time</label>
-      <input class="form-control" name="open_time"
-             value="{{ facility.open }}" required>
+      <select class="form-control" name="open_time" required>
+        {% for time_24, time_12 in time_options %}
+        <option value="{{ time_24 }}" {% if time_24 == facility.open %}selected{% endif %}>{{ time_12 }}</option>
+        {% endfor %}
+      </select>
     </div>
     <div class="form-group">
       <label>Close Time</label>
-      <input class="form-control" name="close_time"
-             value="{{ facility.close }}" required>
+      <select class="form-control" name="close_time" required>
+        {% for time_24, time_12 in time_options %}
+        <option value="{{ time_24 }}" {% if time_24 == facility.close %}selected{% endif %}>{{ time_12 }}</option>
+        {% endfor %}
+      </select>
     </div>
     <div class="form-group">
       <label>Gym ID</label>

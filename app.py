@@ -126,8 +126,10 @@ def add_gym():
         admin.driver.add_gym(name, open_time, close_time, admin.userid, address_id)
         flash('Gym added successfully!', 'success')
         return redirect(url_for('admin/manage_gyms'))
+    
+    time_options = generate_time_options("00:00", "23:30", 30)
 
-    return render_template('admin/add_gym.html')
+    return render_template('admin/add_gym.html', time_options=time_options)
 
 
 @app.route('/admin/gyms/edit/<int:gym_id>', methods=['GET','POST'])
@@ -150,8 +152,10 @@ def edit_gym(gym_id):
     if not gym:
         flash('Gym not found.', 'danger')
         return redirect(url_for('admin/manage_gyms'))
+    
+    time_options = generate_time_options("00:00", "23:30", 30)
 
-    return render_template('admin/edit_gym.html', gym=gym)
+    return render_template('admin/edit_gym.html', gym=gym, time_options=time_options)
 
 
 @app.route('/admin/gyms/delete/<int:gym_id>')
@@ -383,8 +387,10 @@ def add_facility():
         admin.driver.add_facility(name, open_time, close_time, gym_id)
         flash('Facility added successfully!', 'success')
         return redirect(url_for('manage_facilities'))
+    
+    time_options = generate_time_options("00:00", "23:30", 30)
 
-    return render_template('admin/add_facility.html')
+    return render_template('admin/add_facility.html', time_options=time_options)
 
 @app.route('/admin/facilities/edit/<int:facility_id>', methods=['GET','POST'])
 def edit_facility(facility_id):
@@ -401,9 +407,10 @@ def edit_facility(facility_id):
         admin.driver.update_facility(facility_id, name, open_time, close_time, gym_id)
         flash('Facility updated successfully!', 'success')
         return redirect(url_for('manage_facilities'))
-
+    
+    time_options = generate_time_options("00:00", "23:30", 30)
     facility = admin.driver.get_facility_by_id(facility_id)
-    return render_template('admin/edit_facility.html', facility=facility)
+    return render_template('admin/edit_facility.html', facility=facility, time_options=time_options)
 
 
 @app.route('/admin/facilities/delete/<int:facility_id>')

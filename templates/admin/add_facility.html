@@ -9,11 +9,19 @@
     </div>
     <div class="form-group">
       <label>Open Time</label>
-      <input class="form-control" name="open_time" placeholder="HH:MM" required>
+      <select class="form-control" name="open_time" required>
+        {% for time_24, time_12 in time_options %}
+        <option value="{{ time_24 }}">{{ time_12 }}</option>
+        {% endfor %}
+      </select>
     </div>
     <div class="form-group">
       <label>Close Time</label>
-      <input class="form-control" name="close_time" placeholder="HH:MM" required>
+      <select class="form-control" name="close_time" required>
+        {% for time_24, time_12 in time_options %}
+        <option value="{{ time_24 }}">{{ time_12 }}</option>
+        {% endfor %}
+      </select>
     </div>
     <div class="form-group">
       <label>Gym ID</label>
