@@ -15,21 +15,43 @@ class DB_Driver():
     def view_personal_info(self, user_id: int) -> dict:
         try:
             self.cursor.execute(
-                """
-                SELECT userID, email, name, memType, phone, addressID
-                FROM Person
-                WHERE userID = %s
-                """,
-                (user_id,)
-            )
+                    """
+                    SELECT
+                    p.userID,
+                    p.email,
+                    p.name,
+                    p.memType,
+                    p.phone,
+                    a.StName
+                        || ', '
+                        || a.City
+                        || ', '
+                        || a.State
+                        || ' '
+                        || a.Zip
+                        AS full_address,
+                    FROM Person p
+                    LEFT JOIN Address a
+                    ON p.addressID = a.addressID
+                    WHERE p.userID = %s
+                    """,
+                    (user_id,)
+                )
             result = self.cursor.fetchone()
             if result is None:
                 print(f"No user found with ID {user_id}")
                 return {}
-
-            keys = ['userID', 'email', 'name', 'memType', 'phone', 'addressID', 'loginID']
+            # fetchall
+            keys = [
+                'userID',
+                'email',
+                'name',
+                'memType',
+                'phone',
+                'full_address'
+                ]
             return dict(zip(keys, result)) # save as dict
-
+        
         except Exception as e:
             print(f"Error retrieving personal info for user {user_id}:", e)
             return {}
