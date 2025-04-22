@@ -3,55 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Classes & Enrollments</title>
+    <title>Your Classes</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         .container { margin-top: 30px; }
-        .class-section { margin-bottom: 40px; }
-        .class-header { background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-        .no-enrollments { font-style: italic; color: #888; }
+        .card { margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
+<div class="container">
+    <h1>Your Classes</h1>
 
-    <div class="container">
-        <h1>Your Classes & Enrollments</h1>
-    
-        {% for class in classes %}
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h3>{{ class.class_name }}</h3>
-                </div>
-                <div class="card-body">
-                    {% if class.members %}
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Student Name</th>
-                                    <th>Email</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for student in class.members %}
-                                    <tr>
-                                        <td>{{ student.student_name }}</td>
-                                        <td>{{ student.student_email }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% else %}
-                        <p>No students enrolled yet.</p>
-                    {% endif %}
-                </div>
+    {% for class in classes %}
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ class.class_name }}</h3>
             </div>
-        {% endfor %}
-    </div>
-    
-    <div class="text-center mt-4">
-        <a href="{{ url_for('instructor_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
-    </div>
+            <div class="card-body">
+                <p><strong>Start:</strong> {{ class.start_time }}</p>
+                <p><strong>End:</strong> {{ class.end_time }}</p>
+                <a href="{{ url_for('view_enrollments', class_id=class.class_id) }}" class="btn btn-primary">View Enrollments</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="text-center mt-4">
+    <a href="{{ url_for('instructor_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

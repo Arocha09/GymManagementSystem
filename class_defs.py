@@ -115,6 +115,11 @@ class Instructor(Person):
         return enrollments
     pass
 
+    def get_enrollments_by_class(self, class_id):
+        enrollment = self.driver.get_enrollment_by_class(class_id=class_id)
+        return enrollment
+
+
 class Member(Person):
     def view_my_classes(self):
         results = self.driver.get_enrolled_classes(self.userid)

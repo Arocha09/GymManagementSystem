@@ -444,28 +444,14 @@ def instructor_dashboard():
 #     classes = instructor.get_class_table()
 #     return render_template('admin/manage_classes.html', classes=classes)
 
-def generate_time_options(start, end, interval_minutes):
-    time_format_24 = "%H:%M"
-    time_format_12 = "%I:%M %p"
-
-    start_time = datetime.strptime(start, time_format_24)
-    end_time = datetime.strptime(end, time_format_24)
-    options = []
-
-    while start_time <= end_time:
-        time_24 = start_time.strftime(time_format_24)
-        time_12 = start_time.strftime(time_format_12)
-        options.append((time_24, time_12))
-        start_time += timedelta(minutes=interval_minutes)
-
-    return options
 
 @app.route('/instructor/enrollments')
 def view_enrollments():
     instructor = get_logged_in_user()
-    #TODO: the get_enrollments needs to be coded
-    enrollments = instructor.get_enrollments() 
-    return render_template('instructor/view_enrollments.html', enrollments=enrollments)
+    students = instructor.get_enrollments_by_class(class_id)
+
+    return render_template('instructor/enrollments.html', students=students, class_id=class_id)
+
 
 @app.route('/instructor/classes_and_enrollments')
 def view_classes_and_enrollments():
@@ -473,7 +459,6 @@ def view_classes_and_enrollments():
         return redirect(url_for('home'))
     instructor = get_logged_in_user()
     classes = instructor.get_class_table()
-    enrollments = instructor.get_enrollments()  # uses your code above
 
     return render_template('instructor/classes_and_enrollments.html', classes=classes)
 
