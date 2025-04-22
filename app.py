@@ -429,19 +429,21 @@ def instructor_dashboard():
     classes = instructor.get_class_table()
     return render_template('instructor/instructor_dashboard.html', classes=classes)
 
-# @app.route('/instructor/classes')
-# def view_classes():
-#     instructor = get_logged_in_user()
-#     classes = instructor.get_class_table()
-#     return render_template('admin/manage_classes.html', classes=classes)
+@app.route('/instructor/classes')
+def view_classes():
+    instructor = get_logged_in_user()
+    if not instructor or session.get('memType')!='instructor':
+        return redirect(url_for('home'))
+    classes = instructor.get_class_table()   # returns only THEIR classes
+    return render_template('instructor/manage_classes.html', classes=classes)
 
 
-# @app.route('/instructor/enrollments')
-# def view_enrollments():
-#     instructor = get_logged_in_user()
-#     #TODO: the get_enrollments needs to be coded
-#     enrollments = instructor.get_enrollments() 
-#     return render_template('instructor/view_enrollments.html', enrollments=enrollments)
+@app.route('/instructor/enrollments')
+def view_enrollments():
+    instructor = get_logged_in_user()
+    #TODO: the get_enrollments needs to be coded
+    enrollments = instructor.get_enrollments() 
+    return render_template('instructor/view_enrollments.html', enrollments=enrollments)
 
 @app.route('/instructor/classes_and_enrollments')
 def view_classes_and_enrollments():
@@ -480,7 +482,7 @@ def enroll():
     
     db.add_member_to_class(member_id, class_id)
     
-    return redirect(url_for('member_dashboard'))
+    return redirect(url_for('member/member_info.html'))
 
 @app.route("/classes")
 def all_classes():
