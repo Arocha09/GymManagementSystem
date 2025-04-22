@@ -320,7 +320,8 @@ def delete_instructor(user_id):
 @app.route('/admin/classes')
 def manage_classes():
     admin = get_logged_in_user()
-    classes = admin.get_class_table()
+    classes = admin.get_classes_with_instructors()
+    
     return render_template('admin/manage_classes.html', classes=classes)  # your logic here
 
 @app.route('/classes', methods=['GET', 'POST'])
@@ -429,13 +430,11 @@ def instructor_dashboard():
     classes = instructor.get_class_table()
     return render_template('instructor/instructor_dashboard.html', classes=classes)
 
-@app.route('/instructor/classes')
-def view_classes():
-    instructor = get_logged_in_user()
-    if not instructor or session.get('memType')!='instructor':
-        return redirect(url_for('home'))
-    classes = instructor.get_class_table()   # returns only THEIR classes
-    return render_template('instructor/manage_classes.html', classes=classes)
+# @app.route('/instructor/classes')
+# def view_classes():
+#     instructor = get_logged_in_user()
+#     classes = instructor.get_class_table()
+#     return render_template('admin/manage_classes.html', classes=classes)
 
 
 @app.route('/instructor/enrollments')
@@ -450,9 +449,10 @@ def view_classes_and_enrollments():
     if not session.get("user_id"):
         return redirect(url_for('home'))
     instructor = get_logged_in_user()
+    classes = instructor.get_class_table()
     enrollments = instructor.get_enrollments()  # uses your code above
 
-    return render_template('instructor/classes_and_enrollments.html', classes=enrollments)
+    return render_template('instructor/classes_and_enrollments.html', classes=classes)
 
 
 
@@ -482,7 +482,7 @@ def enroll():
     
     db.add_member_to_class(member_id, class_id)
     
-    return redirect(url_for('member/member_info.html'))
+    return redirect(url_for('member_dashboard'))
 
 @app.route("/classes")
 def all_classes():
