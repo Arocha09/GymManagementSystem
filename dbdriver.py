@@ -14,6 +14,7 @@ class DB_Driver():
     # generic for all 3
     def view_personal_info(self, user_id: int) -> dict:
         try:
+<<<<<<< HEAD
             self.cursor.execute(
                     """
                     SELECT
@@ -38,6 +39,18 @@ class DB_Driver():
                     (user_id,)
                 )
             result = self.cursor.fetchone()
+=======
+            with self.client.cursor() as cursor:
+                cursor.execute(
+                """
+                SELECT userID, email, name, memType, phone, addressID, loginID
+                FROM Person
+                WHERE userID = %s
+                """,
+                (user_id,)
+            )
+                result = cursor.fetchone()
+>>>>>>> c6a9036 (db driver updates)
             if result is None:
                 print(f"No user found with ID {user_id}")
                 return {}
@@ -742,6 +755,10 @@ class DB_Driver():
             self.client.rollback()  # Undo the transaction if it failed
             print(f"Failed to add address: {st_name} {city} {state} {zip}: {e}")
             return None
+        
+    def close(self):
+        self.cursor.close()
+        self.client.close()
 
 
 
@@ -762,6 +779,7 @@ def get_cursor(client):
     print("create cursor")
     cursor = client.cursor()
     return cursor
+
 
 
 

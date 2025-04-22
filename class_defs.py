@@ -205,6 +205,7 @@ class Facilities():
         self.facility_open = facility_open
         self.facility_close = facility_close
         self.gym_id = gym_id
+        self.driver = DB_Driver()
     
 
     def get_facilities_list(self):

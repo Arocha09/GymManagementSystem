@@ -445,13 +445,12 @@ def instructor_dashboard():
 #     return render_template('admin/manage_classes.html', classes=classes)
 
 
-@app.route('/instructor/enrollments')
-def view_enrollments():
+@app.route('/instructor/view_enrollments/<int:class_id>')
+def view_enrollments(class_id):
     instructor = get_logged_in_user()
     students = instructor.get_enrollments_by_class(class_id)
 
     return render_template('instructor/enrollments.html', students=students, class_id=class_id)
-
 
 @app.route('/instructor/classes_and_enrollments')
 def view_classes_and_enrollments():
@@ -492,7 +491,7 @@ def enroll():
     
     return redirect(url_for('member_dashboard'))
 
-@app.route("/classes")
+@app.route("/all_classes")
 def all_classes():
     result = db.get_class_info()
     classes = []
@@ -659,3 +658,5 @@ def register():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    db.close()
+    
