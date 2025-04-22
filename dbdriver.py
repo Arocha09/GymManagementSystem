@@ -108,6 +108,18 @@ class DB_Driver():
         except Exception as e:
             print(f"Error retrieving enrolled classes for member {member_id}:", e)
             return []
+        
+
+    def get_classes_with_instructors(self):
+        self.cursor.execute("""
+            SELECT Class.classid, Class.classname, Person.name, Class.starttime, Class.endtime
+            FROM Class
+            JOIN Person ON Class.instructorid = Person.userid
+        """)
+        result = self.cursor.fetchall()
+        print(result)
+        return result
+
     
     # SQL to enroll in a class (member only)
     def enroll_in_class(self, member_id: int, class_id: int) -> None:

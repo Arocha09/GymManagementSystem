@@ -50,6 +50,18 @@ class Person():
             self.username = new_username
         if new_password:
             self.password = new_password
+    def get_classes_with_instructors(self):
+        classes_result = self.driver.get_classes_with_instructors()
+        classes =[]        
+        for result in classes_result:
+            classes.append({
+                'class_id': result[0],
+                'class_name': result[1],
+                'instructor_name': result[2],
+                'start_time': result[3],
+                'end_time': result[4]
+            })
+        return classes
 
     
 
