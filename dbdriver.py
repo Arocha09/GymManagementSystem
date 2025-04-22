@@ -230,7 +230,27 @@ class DB_Driver():
             self.client.rollback()
             print(f"Error deleting class {class_id}:", e)
 
-    
+    # SQL to edit a class
+    def edit_class(self, class_id: int, instructor_id: int, gym_id: int, class_name: str, start_time: str, end_time: str) -> None:
+        try:
+            self.cursor.execute(
+                """
+                UPDATE Class
+                   SET instructorID = %s,
+                       gymID = %s,
+                       className = %s,
+                       startTime = %s, 
+                       endTime = %s
+                 WHERE classID = %s
+                """
+                ,
+                (instructor_id, gym_id, class_name, start_time, end_time, class_id)
+            )
+            self.client.commit()
+            print("Class successfully added.")
+        except Exception as e:
+            self.client.rollback()
+            print("Error adding class:", e)
 
     # SQL to get all instructor info (admin only)
     def get_instructor_info(self) -> list:
