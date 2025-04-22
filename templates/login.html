@@ -31,6 +31,22 @@
             color: #333;
         }
 
+        .register-container{
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .register-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+            color: #333;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -58,6 +74,7 @@
 
         .login-button {
             width: 100%;
+            display:block;
             padding: 12px;
             background-color: #007bff;
             border: none;
@@ -75,6 +92,8 @@
 
         .register-button {
             width: 100%;
+            display: block; /* <--- change this line */
+            box-sizing: border-box;
             padding: 12px;
             background-color: #6c757d;
             border: none;
@@ -84,7 +103,6 @@
             cursor: pointer;
             text-align: center;
             text-decoration: none;
-            display: inline-block;
             transition: background-color 0.3s ease;
         }
 
