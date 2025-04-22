@@ -16,7 +16,7 @@ class DB_Driver():
         try:
             self.cursor.execute(
                 """
-                SELECT userID, email, name, memType, phone, addressID, loginID
+                SELECT userID, email, name, memType, phone, addressID
                 FROM Person
                 WHERE userID = %s
                 """,
