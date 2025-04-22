@@ -314,7 +314,7 @@ def delete_instructor(user_id):
 
     admin.driver.delete_instructor(user_id)
     flash('Instructor deleted successfully!', 'success')
-    return redirect(url_for('admin/manage_instructors'))
+    return redirect(url_for('manage_instructors'))
 
 #TODO: Test
 @app.route('/admin/classes')
