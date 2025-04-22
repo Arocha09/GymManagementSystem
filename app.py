@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from dbdriver import DB_Driver
 import login
 from class_defs import Member, Person, Administrator, Class, Instructor, Address, Login
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = 'dev'  # Replace with a strong secret in prod
@@ -341,7 +342,7 @@ def add_class():
 
         admin.driver.add_class(instructor, gym_id, class_name, start_time, end_time)
 
-        
+    
         return redirect(url_for('add_class'))
 
     # For GET requests, just show the form
@@ -437,6 +438,21 @@ def view_classes():
     classes = instructor.get_class_table()   # returns only THEIR classes
     return render_template('instructor/manage_classes.html', classes=classes)
 
+def generate_time_options(start, end, interval_minutes):
+    time_format_24 = "%H:%M"
+    time_format_12 = "%I:%M %p"
+
+    start_time = datetime.strptime(start, time_format_24)
+    end_time = datetime.strptime(end, time_format_24)
+    options = []
+
+    while start_time <= end_time:
+        time_24 = start_time.strftime(time_format_24)
+        time_12 = start_time.strftime(time_format_12)
+        options.append((time_24, time_12))
+        start_time += timedelta(minutes=interval_minutes)
+
+    return options
 
 @app.route('/instructor/enrollments')
 def view_enrollments():
@@ -524,7 +540,9 @@ def edit_class(class_id):
         flash('Class updated successfully!', 'success')
         return redirect(url_for('manage_classes'))
 
-    return render_template('classes/edit_class.html', gym_class=gym_class)
+    time_options = generate_time_options("06:00", "18:00", 30)
+
+    return render_template('classes/edit_class.html', gym_class=gym_class, time_options=time_options)
 
 
 
