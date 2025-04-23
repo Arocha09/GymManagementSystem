@@ -15,21 +15,21 @@ class Person():
 
 
     def get_class_table(self):
-        
         classes_result = self.driver.get_class_info()
-        classes =[]
+        classes = []
         for result in classes_result:
             c = Class(
-                class_id=result['classid'],
-                instructor_id=result['instructorid'],
-                gym_id=result['gymid'],
-                class_name=result['classname'],
-                start_time = result['starttime'],
-                end_time = result['endtime']
-                )
+                class_id      = result['classid'],
+                instructor_id = result['instructorid'],
+                # grab gymname instead of gymid
+                gym_name      = result['gymname'],
+                class_name    = result['classname'],
+                start_time    = result['starttime'],
+                end_time      = result['endtime']
+            )
             classes.append(c)
-        
         return classes
+
 
     def get_personal_info(self):
         return 
@@ -93,14 +93,14 @@ class Instructor(Person):
     def view_my_classes(self):
         results = self.driver.get_instructor_classes(self.userid)
         classes = []
-        for result in results:
-            class_id = result[0]
-            instructor_id = result[1]
-            gym_id = result[2]
-            class_name = result[3]
-            start_time = result[4]
-            end_time = result[5]
-            classes.append(Class(class_id, instructor_id, gym_id, class_name, start_time, end_time))
+        for (class_id, instructor_id, gym_name, class_name, start_time, end_time) in results:
+            # pass gym_name instead of gym_id into your Class constructor
+            classes.append(Class(class_id,
+                                instructor_id,
+                                gym_name,
+                                class_name,
+                                start_time,
+                                end_time))
 
         print("Your Classes:")
         for c in classes:
