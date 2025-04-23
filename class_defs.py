@@ -95,6 +95,7 @@ class Instructor(Person):
         classes = []
         for (
             class_id,
+            instructor_id,
             instructor_name,
             gym_name,
             class_name,
@@ -104,7 +105,8 @@ class Instructor(Person):
             classes.append(
                 Class(
                     class_id=class_id,
-                    instructor_id=instructor_name,
+                    instructor_id=instructor_id,
+                    instructor_name=instructor_name,
                     gym_name=gym_name,
                     class_name=class_name,
                     start_time=start_time,
@@ -114,8 +116,12 @@ class Instructor(Person):
 
         print("Your Classes:")
         for c in classes:
-            print(c)
+            # Only show class ID, name, instructor name, gym name, times
+            print(f"{c.class_id}: “{c.class_name}” with {c.instructor_name} @ {c.gym_name} "
+                    f"({c.start_time}–{c.end_time})")
+
         return classes
+
 
     
     def get_enrollments(self):
