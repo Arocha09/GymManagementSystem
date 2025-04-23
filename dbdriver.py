@@ -673,6 +673,7 @@ class DB_Driver():
                 """
                 SELECT
                 c.classId,
+                c.instructorID,
                 p.name        AS instructor_name,
                 g.gymName     AS gymname,
                 c.className,

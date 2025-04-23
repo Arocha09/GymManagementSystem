@@ -93,19 +93,30 @@ class Instructor(Person):
     def view_my_classes(self):
         results = self.driver.get_instructor_classes(self.userid)
         classes = []
-        for (class_id, instructor_id, gym_name, class_name, start_time, end_time) in results:
-            # pass gym_name instead of gym_id into your Class constructor
-            classes.append(Class(class_id,
-                                instructor_id,
-                                gym_name,
-                                class_name,
-                                start_time,
-                                end_time))
+        for (
+            class_id,
+            instructor_name,
+            gym_name,
+            class_name,
+            start_time,
+            end_time
+        ) in results:
+            classes.append(
+                Class(
+                    class_id=class_id,
+                    instructor_id=instructor_name,
+                    gym_name=gym_name,
+                    class_name=class_name,
+                    start_time=start_time,
+                    end_time=end_time
+                )
+            )
 
         print("Your Classes:")
         for c in classes:
             print(c)
         return classes
+
     
     def get_enrollments(self):
         classes = self.view_my_classes()
