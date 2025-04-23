@@ -246,6 +246,17 @@ class DB_Driver():
 
 
 
+    def get_instructor_name(self, id):
+        try:
+            self.cursor.execute("""
+                SELECT p.name
+                FROM Person p
+                WHERE userid = %s
+                                """, (id,))
+            name = self.cursor.fetchone()
+            return name
+        except Exception as e:
+            print(e)
 
 
 
@@ -269,9 +280,22 @@ class DB_Driver():
             ON c.gymID = g.gymID;
         """)
         rows = self.cursor.fetchall()
-        keys = ['classid', 'instructorid', 'gymname', 'classname', 'starttime', 'endtime']
+        keys = ['class_id', 'instructor_id', 'gym_name', 'class_name', 'start_time', 'end_time']
         return [dict(zip(keys, r)) for r in rows]
 
+    def get_og_class_info(self):
+        try:
+            self.cursor.execute("""
+                SELECT *
+                FROM Class
+                            """)
+            rows = self.cursor.fetchall()
+            keys = ['classid', 'instructorid', 'gymid', 'classname', 'starttime', 'endtime']
+            return [dict(zip(keys, r)) for r in rows]
+        except Exception as e:
+            print(f"unable to retrieve class info {e}")
+
+            
     
     # SQL for admin to add a class with all the right information
     def add_class(self, instructor_id: int, gym_id: int, class_name: str, start_time: str, end_time: str) -> None:
@@ -964,7 +988,7 @@ class DB_Driver():
 
 def connect_to_postgres_db():
     print("connecting to the db")
-    client = psycopg2.connect(dbname = "group13", user = "group13", password = "V5ukP3C2", host = "bastion.cs.virginia.edu", port = "5432")
+    client = psycopg2.connect(dbname = "group13_final_test", user = "postgres", password = "A090903mr!", host = "localhost", port = "5432")
     return client
 
 def get_cursor(client):
