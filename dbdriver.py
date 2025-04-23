@@ -988,7 +988,7 @@ class DB_Driver():
 
 def connect_to_postgres_db():
     print("connecting to the db")
-    client = psycopg2.connect(dbname = "group13_final_test", user = "postgres", password = "A090903mr!", host = "localhost", port = "5432")
+    client = psycopg2.connect(dbname = "group13", user = "group13", password = "V5ukP3C2", host = "bastion.cs.virginia.edu", port = "5432")
     return client
 
 def get_cursor(client):
