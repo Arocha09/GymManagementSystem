@@ -535,20 +535,39 @@ def enroll():
     
     return redirect(url_for('member_dashboard'))
 
+@app.route('/unenroll', methods=['POST'])
+def unenroll():
+    if 'user_id' not in session or session.get('memType') not in ['monthly', 'yearly']:
+        return redirect(url_for('log_in'))
+    
+    class_id = request.form.get('class_id')
+    member_id = session['user_id']
+    
+    db.unenroll_from_class(member_id, class_id)
+    
+    return redirect(url_for('member_dashboard'))
+
 @app.route("/all_classes")
 def all_classes():
+    user = get_logged_in_user()
     result = db.get_class_info()
+    enrolled_classes = db.get_enrolled_classes(user.view_personal_info()['userID'])
     classes = []
+    enrolled_ids = []
     for item in result:
+        instructorName = db.view_personal_info(item['instructorid'])['name']
         c = Class(item['classid'],
-                  item['instructorid'],
-                  item['gymid'],
+                  instructorName,
+                  item['gymname'],
                   item['classname'],
                   item['starttime'],
                   item['endtime'])
         classes.append(c)
+    for item in enrolled_classes:
+        print(item)
+        enrolled_ids.append(item[0])
     return render_template('member/all_classes.html',
-                         classes=classes,
+                         classes=classes, enrolled_ids=enrolled_ids
                         )
 
 
