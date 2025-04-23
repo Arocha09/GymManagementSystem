@@ -14,7 +14,6 @@ class Person():
         self.driver = DB_Driver()
 
 
-
     def get_class_table(self):
         
         classes_result = self.driver.get_class_info()
@@ -32,6 +31,8 @@ class Person():
         
         return classes
 
+    def get_personal_info(self):
+        return 
     def view_personal_info(self):
         info = self.driver.view_personal_info(self.userid)
         print("Your Personal Info:")

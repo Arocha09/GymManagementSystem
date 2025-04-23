@@ -20,6 +20,7 @@
             <a href="{{ url_for('manage_instructors') }}">Instructors</a>
             <a href="{{ url_for('manage_facilities') }}">Facilities</a>
             <a href="{{ url_for('manage_classes') }}">Classes</a>
+            <a href="{{ url_for('manage_gyms') }}">Gyms</a>
 
         {% elif session.memType == 'instructor' %}
             <a href="{{ url_for('instructor_dashboard') }}">Instructor Home</a>

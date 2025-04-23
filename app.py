@@ -25,6 +25,7 @@ def log_in():
 
         user = login.login(username, password)
         if user is not None:
+            
             user_struct = user.view_personal_info()
             session["user_id"] = user_struct["userID"]
             session["username"] = user_struct["name"]
@@ -47,7 +48,8 @@ def get_logged_in_user():
         return None
     else:
         user_id = session["user_id"]
-        result = db.view_personal_info(user_id)
+        result = db.get_personal_info(user_id)
+        print(result)
         if session.get('memType') == 'admin':
             if result and result['memType'] == "admin":
                 return Administrator(
@@ -83,6 +85,21 @@ def get_logged_in_user():
                 )
     return None
     
+def generate_time_options(start, end, interval_minutes):
+    time_format_24 = "%H:%M"
+    time_format_12 = "%I:%M %p"
+
+    start_time = datetime.strptime(start, time_format_24)
+    end_time = datetime.strptime(end, time_format_24)
+    options = []
+
+    while start_time <= end_time:
+        time_24 = start_time.strftime(time_format_24)
+        time_12 = start_time.strftime(time_format_12)
+        options.append((time_24, time_12))
+        start_time += timedelta(minutes=interval_minutes)
+
+    return options
 # Admin Routes
 
 #TODO: Test
@@ -169,7 +186,7 @@ def delete_gym(gym_id):
     return redirect(url_for('admin/manage_gyms'))
 
 
-@app.route('/admin/members')
+@app.route('/admin/manage_members')
 def manage_members():
     admin = get_logged_in_user()
     if not admin or session.get('memType') != 'admin':

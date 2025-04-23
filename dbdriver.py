@@ -12,6 +12,35 @@ class DB_Driver():
         self.cursor = get_cursor(self.client)
 
     # generic for all 3
+    def get_personal_info(self, user_id):
+        try:
+            self.cursor.execute(
+                    """
+                    SELECT *
+                    FROM Person
+                    WHERE userID = %s
+                    """,
+                    (user_id,)
+                )
+            result = self.cursor.fetchone()
+            if result is None:
+                print(f"No user found with ID {user_id}")
+                return {}
+            # fetchall
+            keys = [
+                'userID',
+                'email',
+                'name',
+                'memType',
+                'phone',
+                'addressID',
+                'loginID'
+                ]
+            return dict(zip(keys, result)) # save as dict
+        
+        except Exception as e:
+            print(f"Error retrieving personal info for user {user_id}:", e)
+            return {}
     def view_personal_info(self, user_id: int) -> dict:
         try:
             self.cursor.execute(
@@ -29,7 +58,7 @@ class DB_Driver():
                         || a.State
                         || ' '
                         || a.Zip
-                        AS full_address,
+                        AS full_address
                     FROM Person p
                     LEFT JOIN Address a
                     ON p.addressID = a.addressID
@@ -787,6 +816,7 @@ def get_cursor(client):
     print("create cursor")
     cursor = client.cursor()
     return cursor
+
 
 
 
