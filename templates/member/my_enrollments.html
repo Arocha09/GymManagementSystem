@@ -2,42 +2,44 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="text-center mb-4">My Enrollments</h1>
+    <h2 class="text-center mb-4" style="color: #333;">My Enrollments</h2>
 
     {% if classes %}
-    <table class="table table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th>Class ID</th>
-                <th>Name</th>
-                <th>Instructor</th>
-                <th>Gym</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in classes %}
-            <tr>
-                <td>{{ c.class_id }}</td>
-                <td>{{ c.class_name }}</td>
-                <td>{{ c.instructor }}</td>
-                <td>{{ c.gym_id }}</td>
-                <td>{{ c.start_time }}</td>
-                <td>{{ c.end_time }}</td>
-                <td>
-                    <form method="POST" action="{{ url_for('unenroll') }}">
-                        <input type="hidden" name="class_id" value="{{ c.class_id }}">
-                        <button type="submit" class="btn btn-danger btn-sm">Unenroll</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Class ID</th>
+                    <th>Name</th>
+                    <th>Instructor</th>
+                    <th>Gym</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in classes %}
+                <tr>
+                    <td>{{ c.class_id }}</td>
+                    <td>{{ c.class_name }}</td>
+                    <td>{{ c.instructor }}</td>
+                    <td>{{ c.gym_id }}</td>
+                    <td>{{ c.start_time }}</td>
+                    <td>{{ c.end_time }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('unenroll') }}">
+                            <input type="hidden" name="class_id" value="{{ c.class_id }}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Unenroll</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-        <p class="text-center">You are not enrolled in any classes.</p>
+        <p class="text-center text-muted">You are not enrolled in any classes.</p>
     {% endif %}
 
     <div class="text-center mt-4">
