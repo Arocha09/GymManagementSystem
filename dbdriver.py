@@ -673,12 +673,15 @@ class DB_Driver():
                 """
                 SELECT
                 c.classId,
-                c.instructorID,
-                g.gymName   AS gymname,
+                p.name        AS instructor_name,
+                g.gymName     AS gymname,
                 c.className,
                 c.startTime,
                 c.endTime
                 FROM Class AS c
+                JOIN Person AS p
+                ON c.instructorID = p.userID
+                AND p.memType = 'instructor'
                 JOIN Gym   AS g
                 ON c.gymID = g.gymID
                 WHERE c.instructorID = %s
@@ -689,6 +692,7 @@ class DB_Driver():
         except Exception as e:
             print(f"Error retrieving classes for instructor {instructor_id}:", e)
         return []
+
 
     
     def get_enrollment_by_class(self, class_id):
