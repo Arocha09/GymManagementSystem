@@ -15,8 +15,9 @@
             <tr>
                 <th>Facility ID</th>
                 <th>Name</th>
-                <th>Status</th>
-                <th>Capacity</th>
+                <th>Open</th>
+                <th>Close</th>
+                <th>Gym ID</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -25,8 +26,9 @@
             <tr>
                 <td>{{ facility.id }}</td>
                 <td>{{ facility.name }}</td>
-                <td>{{ facility.status }}</td>
-                <td>{{ facility.capacity }}</td>
+                <td>{{ facility.open }}</td>
+                <td>{{ facility.close }}</td>
+                <td>{{ facility.gym_id }}</td>
                 <td>
                     <a href="{{ url_for('edit_facility', facility_id=facility.id) }}" class="btn btn-primary btn-sm">Edit</a>
                     <a href="{{ url_for('delete_facility', facility_id=facility.id) }}" class="btn btn-danger btn-sm">Delete</a>
