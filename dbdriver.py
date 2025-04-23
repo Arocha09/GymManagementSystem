@@ -411,6 +411,71 @@ class DB_Driver():
             self.client.rollback()
             print("Error adding member:", e)
 
+    # SQL to update address (admin only)
+    def update_address(self,
+                       address_id: int,
+                       st_name: str,
+                       city: str,
+                       state: str,
+                       zip_code: str) -> None:
+
+        try:
+            self.cursor.execute(
+                """
+                UPDATE address
+                   SET stname = %s,
+                       city   = %s,
+                       state  = %s,
+                       zip    = %s
+                 WHERE addressid = %s
+                """,
+                (st_name, city, state, zip_code, address_id)
+            )
+            self.client.commit()
+            print(f"Address {address_id} updated.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error updating address {address_id}:", e)
+
+    # SQL to update member (admin only)
+    def update_member(self,
+                      user_id: int,
+                      personal_updates: dict,
+                      address_updates: dict) -> None:
+        try:
+            # 1) Update Person columns
+            allowed = ['email','name','memType','phone','loginID']
+            set_clause = ", ".join(f"{k} = %s" for k in personal_updates if k in allowed)
+            values = [personal_updates[k] for k in personal_updates if k in allowed]
+            values.append(user_id)
+            self.cursor.execute(
+                f"UPDATE person SET {set_clause} WHERE userid = %s",
+                tuple(values)
+            )
+
+            # 2) Fetch their addressID
+            self.cursor.execute(
+                "SELECT addressid FROM person WHERE userid = %s",
+                (user_id,)
+            )
+            row = self.cursor.fetchone()
+            if row:
+                address_id = row[0]
+                # 3) Update that address
+                self.update_address(
+                    address_id,
+                    address_updates.get('st_name'),
+                    address_updates.get('city'),
+                    address_updates.get('state'),
+                    address_updates.get('zip_code')
+                )
+
+            self.client.commit()
+            print(f"Member {user_id} and address updated.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error updating member {user_id}:", e)
+
     # SQL to delete member (admin only)
     def delete_member(self, user_id: int) -> None:
         try:

@@ -4,26 +4,52 @@
   <h2>Edit Member</h2>
   <form method="POST">
     <div class="form-group">
-      <label>Email</label>
-      <input class="form-control" name="email" value="{{ user.email }}" required>
+      <label for="email">Email</label>
+      <input id="email"     name="email"     class="form-control"
+             value="{{ user.email }}" required>
     </div>
     <div class="form-group">
-      <label>Name</label>
-      <input class="form-control" name="name" value="{{ user.name }}" required>
+      <label for="name">Name</label>
+      <input id="name"      name="name"      class="form-control"
+             value="{{ user.name }}" required>
     </div>
     <div class="form-group">
-      <label>Role</label>
-      <select class="form-control" name="role" required>
-        <option value="monthly" {% if user.memType == 'monthly' %}selected{% endif %}>Monthly</option>
-        <option value="yearly"  {% if user.memType == 'yearly'  %}selected{% endif %}>Yearly</option>
+      <label for="role">Membership Type</label>
+      <select id="role"     name="role"      class="form-control" required>
+        <option value="monthly" {{ 'selected' if user.memType=='monthly' }}>Monthly</option>
+        <option value="yearly"  {{ 'selected' if user.memType=='yearly'  }}>Yearly</option>
       </select>
     </div>
     <div class="form-group">
-      <label>Phone</label>
-      <input class="form-control" name="phone" value="{{ user.phone }}" required>
+      <label for="phone">Phone</label>
+      <input id="phone"     name="phone"     class="form-control"
+             value="{{ user.phone }}" required>
     </div>
 
-    <button class="btn btn-primary">Save Changes</button>
+    <hr>
+    <h4>Address</h4>
+    <div class="form-group">
+      <label for="st_name">Street Name</label>
+      <input id="st_name"   name="st_name"   class="form-control"
+             value="{{ address.st_name }}" required>
+    </div>
+    <div class="form-group">
+      <label for="city">City</label>
+      <input id="city"      name="city"      class="form-control"
+             value="{{ address.city }}" required>
+    </div>
+    <div class="form-group">
+      <label for="state">State</label>
+      <input id="state"     name="state"     class="form-control"
+             value="{{ address.state }}" required>
+    </div>
+    <div class="form-group">
+      <label for="zip">Zip Code</label>
+      <input id="zip"       name="zip"       class="form-control"
+             value="{{ address.zip }}" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
     <a href="{{ url_for('manage_members') }}" class="btn btn-secondary">Cancel</a>
   </form>
 </div>

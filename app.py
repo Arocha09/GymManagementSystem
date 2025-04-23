@@ -233,24 +233,34 @@ def add_user():
 @app.route('/admin/members/edit/<int:user_id>', methods=['GET', 'POST'])
 def edit_user(user_id):
     admin = get_logged_in_user()
-    if not admin or session.get('memType') != 'admin':
+    if not admin or session['memType']!='admin':
         return redirect(url_for('home'))
 
     if request.method == 'POST':
-        updates = {
-            'email':   request.form['email'],
-            'name':    request.form['name'],
+        personal = {
+            'email':  request.form['email'],
+            'name':   request.form['name'],
             'memType': request.form['role'],
-            'phone':   request.form['phone']
+            'phone':  request.form['phone']
         }
-        # Update the Person row
-        admin.driver.update_personal_info(user_id, updates)
-        flash('Member updated successfully!', 'success')
+        address = {
+            'st_name':   request.form['st_name'],
+            'city':      request.form['city'],
+            'state':     request.form['state'],
+            'zip_code':  request.form['zip']
+        }
+        db.update_member(user_id, personal, address)
+        flash('Member and address updated.', 'success')
         return redirect(url_for('manage_members'))
-
-    # GET: load current info
-    user = admin.driver.view_personal_info(user_id)
-    return render_template('admin/edit_user.html', user=user)
+    user = admin.driver.get_personal_info(user_id)
+    admin.driver.cursor.execute(
+        "SELECT stname,city,state,zip FROM address WHERE addressid=%s",
+        (user['addressID'],)
+    )
+    st,ct,stt,zipc = admin.driver.cursor.fetchone()
+    return render_template('admin/edit_user.html',
+                           user=user,
+                           address={'st_name':st,'city':ct,'state':stt,'zip':zipc})
 
 @app.route('/admin/members/delete/<int:user_id>')
 def delete_user(user_id):
