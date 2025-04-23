@@ -14,7 +14,6 @@ class DB_Driver():
     # generic for all 3
     def view_personal_info(self, user_id: int) -> dict:
         try:
-<<<<<<< HEAD
             self.cursor.execute(
                     """
                     SELECT
@@ -39,18 +38,6 @@ class DB_Driver():
                     (user_id,)
                 )
             result = self.cursor.fetchone()
-=======
-            with self.client.cursor() as cursor:
-                cursor.execute(
-                """
-                SELECT userID, email, name, memType, phone, addressID, loginID
-                FROM Person
-                WHERE userID = %s
-                """,
-                (user_id,)
-            )
-                result = cursor.fetchone()
->>>>>>> c6a9036 (db driver updates)
             if result is None:
                 print(f"No user found with ID {user_id}")
                 return {}
@@ -237,15 +224,25 @@ class DB_Driver():
     # Administrator queries
     
     # SQL to return all classes (admin and instructors only)
+    # this method is ALSO necessary for instructors
+    
     def get_class_info(self) -> list:
-        self.cursor.execute("SELECT * FROM Class")
-        result = self.cursor.fetchall()
-        keys = ['classid', 'instructorid', 'gymid', 'classname', 'starttime', 'endtime']
-        classes = []
-        for r in result:
-            classes.append(dict(zip(keys, r)))
+        self.cursor.execute("""
+            SELECT
+                c.classId,
+                c.instructorID,
+                g.gymName   AS gymname,
+                c.className,
+                c.starTtime,
+                c.endTime
+            FROM Class AS c
+            JOIN Gym   AS g
+            ON c.gymID = g.gymID;
+        """)
+        rows = self.cursor.fetchall()
+        keys = ['classid', 'instructorid', 'gymname', 'classname', 'starttime', 'endtime']
+        return [dict(zip(keys, r)) for r in rows]
 
-        return classes # this method is ALSO necessary for instructors
     
     # SQL for admin to add a class with all the right information
     def add_class(self, instructor_id: int, gym_id: int, class_name: str, start_time: str, end_time: str) -> None:
@@ -639,20 +636,31 @@ class DB_Driver():
         except Exception as e:
             self.client.rollback()
             print(f"Error removing member {member_id} from class {class_id}:", e)
-    
+
+        
     def get_instructor_classes(self, instructor_id: int) -> list:
         try:
             self.cursor.execute(
                 """
-                SELECT * FROM Class
-                WHERE instructorID = %s
+                SELECT
+                c.classId,
+                c.instructorID,
+                g.gymName   AS gymname,
+                c.className,
+                c.startTime,
+                c.endTime
+                FROM Class AS c
+                JOIN Gym   AS g
+                ON c.gymID = g.gymID
+                WHERE c.instructorID = %s
                 """,
                 (instructor_id,)
             )
             return self.cursor.fetchall()
         except Exception as e:
             print(f"Error retrieving classes for instructor {instructor_id}:", e)
-            return []
+        return []
+
     
     def get_enrollment_by_class(self, class_id):
         try:
