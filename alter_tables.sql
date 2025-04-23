@@ -107,3 +107,41 @@ ON DELETE CASCADE;
 
 
 
+
+
+
+-- Add admins and instructors contstraint to Class table
+
+ALTER TABLE Class
+  ADD CONSTRAINT fk_class_instructor
+    FOREIGN KEY (instructorID)
+    REFERENCES Person(userID);
+
+CREATE OR REPLACE FUNCTION ensure_instructor_or_admin()
+  RETURNS trigger
+  LANGUAGE plpgsql
+AS $$
+BEGIN
+  PERFORM 1
+    FROM Person
+   WHERE userID = NEW.instructorID
+     AND memType IN ('instructor','admin');
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION
+      'Cannot assign class to user % – not an instructor or admin',
+      NEW.instructorID;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_validate_instructor_role
+  BEFORE INSERT OR UPDATE OF instructorID ON Class
+  FOR EACH ROW
+  EXECUTE FUNCTION ensure_instructor_or_admin();
+
+
+
+
