@@ -576,16 +576,18 @@ def all_classes():
 @app.route('/classes/edit/<int:class_id>', methods=['GET', 'POST'])
 def edit_class(class_id):
     user = get_logged_in_user()
-    gym_classes = user.get_class_table()
+    gym_classes = user.get_og_class_table()
 
     gym_class = next((c for c in gym_classes if c.class_id == class_id), None)
     if not gym_class:
         flash('Class not found.', 'danger')
         return redirect(url_for('manage_classes'))
+    
+    
 
     if request.method == 'POST':
-        gym_class['name'] = request.form['name']
-        gym_class['instructor'] = request.form['instructor']
+        gym_class['class_name'] = request.form['name']
+        gym_class["instructor"] = request.form['instructor']
         gym_class['start'] = request.form['start_time']
         gym_class['end'] = request.form['end_time']
         

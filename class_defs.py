@@ -14,21 +14,25 @@ class Person():
         self.driver = DB_Driver()
 
 
-    def get_class_table(self):
-        classes_result = self.driver.get_class_info()
+    def get_og_class_table(self):
+        classes_result = self.driver.get_og_class_info()
         classes = []
         for result in classes_result:
             c = Class(
                 class_id      = result['classid'],
                 instructor_id = result['instructorid'],
-                # grab gymname instead of gymid
-                gym_name      = result['gymname'],
+                gym_id      = result['gymid'],
                 class_name    = result['classname'],
                 start_time    = result['starttime'],
                 end_time      = result['endtime']
             )
             classes.append(c)
         return classes
+    
+    def get_class_table(self):
+        classes_result = self.driver.get_class_info()
+        
+        return classes_result
 
 
     def get_personal_info(self):
@@ -181,6 +185,13 @@ class Class():
             f"instructor={self.instructor}, gym={self.gym_id}, "
             f"start='{self.start_time}', end='{self.end_time}')"
         )
+    
+    def get_instructor_name(self):
+        driver = DB_Driver()
+        name = driver.get_instructor_name(self.instructor)
+        driver.client.close()
+        return name
+        
 
 class EnrollmentList():
     def __init__(self, user_id, class_id):
