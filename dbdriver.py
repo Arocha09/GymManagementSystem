@@ -318,7 +318,7 @@ class DB_Driver():
     def delete_class(self, class_id: int) -> None:
         try:
             self.cursor.execute(
-                "DELETE FROM Class WHERE classId = %s",
+            "DELETE FROM Class WHERE classId = %s",
                 (class_id,)
             )
             self.client.commit()

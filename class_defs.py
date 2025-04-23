@@ -11,11 +11,11 @@ class Person():
         self.phone = phone
         self.addressid = address_id
         self.loginid = login_id
-        self.driver = DB_Driver()
 
 
     def get_og_class_table(self):
-        classes_result = self.driver.get_og_class_info()
+        driver = DB_Driver()
+        classes_result = driver.get_og_class_info()
         classes = []
         for result in classes_result:
             c = Class(
@@ -27,36 +27,43 @@ class Person():
                 end_time      = result['endtime']
             )
             classes.append(c)
+        driver.close()
         return classes
     
     def get_class_table(self):
-        classes_result = self.driver.get_class_info()
-        
+        driver = DB_Driver()
+        classes_result = driver.get_class_info()
+        driver.close()
         return classes_result
 
 
     def get_personal_info(self):
         return 
     def view_personal_info(self):
-        info = self.driver.view_personal_info(self.userid)
-        print("Your Personal Info:")
-        for key, value in info.items():
-            print(f"{key}: {value}")
+        driver = DB_Driver()
+        info = driver.view_personal_info(self.userid)
+        driver.close()
         return info
 
     def update_personal_info(self, updates: dict):
-        self.driver.update_personal_info(self.userid, updates)
+        driver = DB_Driver()
+        driver.update_personal_info(self.userid, updates)
         for key, value in updates.items():
             setattr(self, key.lower(), value)  # sync local object!
+
+        driver.close()
     
     def update_login_info(self, new_username=None, new_password=None):
-        self.driver.update_login_info(self.loginid, new_username, new_password)
+        driver = DB_Driver()
+        driver.update_login_info(self.loginid, new_username, new_password)
         if new_username:
             self.username = new_username
         if new_password:
             self.password = new_password
+        driver.close()
     def get_classes_with_instructors(self):
-        classes_result = self.driver.get_classes_with_instructors()
+        driver = DB_Driver()
+        classes_result = driver.get_classes_with_instructors()
         classes =[]        
         for result in classes_result:
             classes.append({
@@ -66,13 +73,15 @@ class Person():
                 'start_time': result[3],
                 'end_time': result[4]
             })
+        driver.close()
         return classes
 
     
 
 class Administrator(Person):
     def get_gyms(self):
-        result = self.driver.get_gym_list(self.userid)
+        driver = DB_Driver()
+        result = driver.get_gym_list(self.userid)
         gym_list = []
         for res in result:
             gym = Gym(  
@@ -84,18 +93,25 @@ class Administrator(Person):
                     address_id= res[5]
                     )
             gym_list.append(gym)
+        driver.close()
         return gym_list
 
 class Instructor(Person):
     def add_member_to_class(self, member_id, class_id):
-        self.driver.add_member_to_class(member_id, class_id)
+        driver = DB_Driver()
+        driver.add_member_to_class(member_id, class_id)
+        driver.close()
+
 
     def remove_member_from_class(self, member_id, class_id):
-        self.driver.remove_member_from_class(member_id, class_id)
+        driver = DB_Driver()
+        driver.remove_member_from_class(member_id, class_id)
+        driver.close()
     
 
     def view_my_classes(self):
-        results = self.driver.get_instructor_classes(self.userid)
+        driver = DB_Driver()
+        results = driver.get_instructor_classes(self.userid)
         classes = []
         for (
             class_id,
@@ -123,6 +139,8 @@ class Instructor(Person):
             # Only show class ID, name, instructor name, gym name, times
             print(f"{c.class_id}: “{c.class_name}” with {c.instructor_name} @ {c.gym_name} "
                     f"({c.start_time}–{c.end_time})")
+        
+        driver.close()
 
         return classes
 
@@ -138,13 +156,16 @@ class Instructor(Person):
     pass
 
     def get_enrollments_by_class(self, class_id):
-        enrollment = self.driver.get_enrollment_by_class(class_id=class_id)
+        driver = DB_Driver()
+        enrollment = driver.get_enrollment_by_class(class_id=class_id)
+        driver.close()
         return enrollment
 
 
 class Member(Person):
     def view_my_classes(self):
-        results = self.driver.get_enrolled_classes(self.userid)
+        driver = DB_Driver()
+        results = driver.get_enrolled_classes(self.userid)
         classes = []
         for result in results:
             class_id = result[0]
@@ -158,17 +179,24 @@ class Member(Person):
         print("You are enrolled in:")
         for c in classes:
             print(c)
+        driver.close()
         return classes
 
     def enroll_in_class(self, class_id):
-        self.driver.enroll_in_class(self.userid, class_id)
+        driver = DB_Driver()
+        driver.enroll_in_class(self.userid, class_id)
+        driver.close()
 
     def unenroll_from_class(self, class_id):
-        self.driver.unenroll_from_class(self.userid, class_id)
+        driver = DB_Driver()
+        driver.unenroll_from_class(self.userid, class_id)
+        driver.close()
 
     def change_membership_type(self, new_type):
-        self.driver.change_membership_type(self.userid, new_type)
+        driver = DB_Driver()
+        driver.change_membership_type(self.userid, new_type)
         self.memtype = new_type  # update local attribute to be consistent
+        driver.close()
     pass
 
 class Class():
@@ -206,10 +234,13 @@ class Address():
         self.city = city
         self.state = state
         self.zip = zip
-        self.driver = DB_Driver()
+        
     
     def add_address(self):
-        return self.driver.add_address(self.st_name, self.city, self.state, self.zip)
+        driver = DB_Driver()
+        address_id = driver.add_address(self.st_name, self.city, self.state, self.zip)
+        driver.close()
+        return address_id
     
 
 
@@ -234,12 +265,11 @@ class Facilities():
         self.facility_open = facility_open
         self.facility_close = facility_close
         self.gym_id = gym_id
-        self.driver = DB_Driver()
     
 
     def get_facilities_list(self):
-        
-        facilities_result = self.driver.get_facilities_list()
+        driver = DB_Driver()
+        facilities_result = driver.get_facilities_list()
         facilities = []
         for result in facilities_result:
             facility_id = result[0]
@@ -249,6 +279,7 @@ class Facilities():
             facility_gym_id = result[4]
             facilities.append(Facilities(facility_id, facility_name, facility_open_time, facility_close_time, facility_gym_id))
         
+        driver.close()
         print(facilities)
 
 class Login():
@@ -259,4 +290,9 @@ class Login():
         self.driver = DB_Driver()
     
     def add_login(self):
-        return self.driver.add_login(self.username, self.password)
+        driver = DB_Driver()
+
+        login_id = driver.add_login(self.username, self.password)
+        driver.close()
+
+        return login_id

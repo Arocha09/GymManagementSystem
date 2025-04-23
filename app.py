@@ -117,13 +117,13 @@ def manage_gyms():
     if not admin or session.get('memType') != 'admin':
         return redirect(url_for('home'))
 
-    raw = admin.driver.get_gym_list(admin.userid)
+    raw = db.get_gym_list(session["user_id"])
     gyms = []
     for gym in raw:
-        gymid, gymname, gymopen, gymclose,_, addressid = gym
+        gymid, gymname, gymopen, gymclose, _, addressid = gym
 
         
-        addr = admin.driver.get_address_by_id(addressid)
+        addr = db.get_address_by_id(addressid)
         location = f"{addr.get('stname')}, {addr.get('city')}, {addr.get('state')} {addr.get('zip')}"
 
         gyms.append({
@@ -186,7 +186,7 @@ def edit_gym(gym_id):
         flash('Gym updated!', 'success')
         return redirect(url_for('manage_gyms'))
     gym = db.get_gym_by_id(gym_id)
-    address = admin.driver.get_address_by_id(gym['addressid'])
+    address = db.get_address_by_id(gym['addressid'])
     time_options = generate_time_options("00:00", "23:30", 30)
 
     return render_template('admin/edit_gym.html', gym=gym,address=address,time_options=time_options,)
@@ -198,9 +198,9 @@ def delete_gym(gym_id):
     if not admin or session.get('memType') != 'admin':
         return redirect(url_for('home'))
 
-    admin.driver.delete_gym(gym_id)
+    db.delete_gym(gym_id)
     flash('Gym deleted successfully!', 'success')
-    return redirect(url_for('admin/manage_gyms'))
+    return redirect(url_for('manage_gyms'))
 
 
 @app.route('/admin/manage_members')
@@ -209,7 +209,7 @@ def manage_members():
     if not admin or session.get('memType') != 'admin':
         return redirect(url_for('home'))
 
-    raw = admin.driver.get_member_info()
+    raw = db.get_member_info()
     users = [{
         'id':    row[0],
         'email': row[1],
@@ -237,7 +237,7 @@ def add_user():
         username = request.form['username']
         password = request.form['password']
 
-        admin.driver.add_member(
+        db.add_member(
             email, name, memtype, phone,
             st_name, city, state, zip_code,
             username, password
@@ -269,12 +269,12 @@ def edit_user(user_id):
         db.update_member(user_id, personal, address)
         flash('Member and address updated.', 'success')
         return redirect(url_for('manage_members'))
-    user = admin.driver.get_personal_info(user_id)
-    admin.driver.cursor.execute(
+    user = db.get_personal_info(user_id)
+    db.cursor.execute(
         "SELECT stname,city,state,zip FROM address WHERE addressid=%s",
         (user['addressID'],)
     )
-    st,ct,stt,zipc = admin.driver.cursor.fetchone()
+    st,ct,stt,zipc = db.cursor.fetchone()
     return render_template('admin/edit_user.html',
                            user=user,
                            address={'st_name':st,'city':ct,'state':stt,'zip':zipc})
@@ -285,7 +285,7 @@ def delete_user(user_id):
     if not admin or session.get('memType') != 'admin':
         return redirect(url_for('home'))
 
-    admin.driver.delete_member(user_id)
+    db.delete_member(user_id)
     flash('Member deleted successfully!', 'success')
     return redirect(url_for('manage_members'))
 
@@ -297,7 +297,7 @@ def manage_instructors():
         return redirect(url_for('home'))
 
     # Returns list of tuples: (userID, email, name, memType, phone, addressID, loginID)
-    raw = admin.driver.get_instructor_info()
+    raw = db.get_instructor_info()
     users = [{
         'id':    row[0],
         'email': row[1],
@@ -324,7 +324,7 @@ def add_instructor():
         username = request.form['username']
         password = request.form['password']
 
-        admin.driver.add_instructor(
+        db.add_instructor(
             email, name, phone,
             st_name, city, state, zip_code,
             username, password
@@ -347,11 +347,11 @@ def edit_instructor(user_id):
             'name':  request.form['name'],
             'phone': request.form['phone']
         }
-        admin.driver.update_personal_info(user_id, updates)
+        db.update_personal_info(user_id, updates)
         flash('Instructor updated successfully!', 'success')
         return redirect(url_for('manage_instructors'))
 
-    user = admin.driver.view_personal_info(user_id)
+    user = db.view_personal_info(user_id)
     return render_template('admin/edit_instructor.html', user=user)
 
 
@@ -361,7 +361,7 @@ def delete_instructor(user_id):
     if not admin or session.get('memType') != 'admin':
         return redirect(url_for('home'))
 
-    admin.driver.delete_instructor(user_id)
+    db.delete_instructor(user_id)
     flash('Instructor deleted successfully!', 'success')
     return redirect(url_for('manage_instructors'))
 
@@ -389,7 +389,7 @@ def add_class():
         end_time = request.form.get('end_time')
         class_name = request.form.get('class_name')
 
-        admin.driver.add_class(instructor, gym_id, class_name, start_time, end_time)
+        db.add_class(instructor, gym_id, class_name, start_time, end_time)
 
     
         return redirect(url_for('add_class'))
@@ -404,7 +404,7 @@ def manage_facilities():
     if not admin or session.get('memType') != 'admin':
         return redirect(url_for('home'))
 
-    raw = admin.driver.get_facilities_list()
+    raw = db.get_facilities_list()
     facilities = [{
         'id':     r[0],
         'name':   r[1],
@@ -428,7 +428,7 @@ def add_facility():
         close_time = request.form['close_time']
         gym_id     = request.form['gym_id']
 
-        admin.driver.add_facility(name, open_time, close_time, gym_id)
+        db.add_facility(name, open_time, close_time, gym_id)
         flash('Facility added successfully!', 'success')
         return redirect(url_for('manage_facilities'))
     
@@ -448,12 +448,12 @@ def edit_facility(facility_id):
         close_time = request.form['close_time']
         gym_id     = request.form['gym_id']
 
-        admin.driver.update_facility(facility_id, name, open_time, close_time, gym_id)
+        db.update_facility(facility_id, name, open_time, close_time, gym_id)
         flash('Facility updated successfully!', 'success')
         return redirect(url_for('manage_facilities'))
     
     time_options = generate_time_options("00:00", "23:30", 30)
-    facility = admin.driver.get_facility_by_id(facility_id)
+    facility = db.get_facility_by_id(facility_id)
     return render_template('admin/edit_facility.html', facility=facility, time_options=time_options)
 
 
@@ -463,7 +463,7 @@ def delete_facility(facility_id):
     if not admin or session.get('memType') != 'admin':
         return redirect(url_for('home'))
 
-    admin.driver.delete_facility(facility_id)
+    db.delete_facility(facility_id)
     flash('Facility deleted successfully!', 'success')
     return redirect(url_for('manage_facilities'))
 
@@ -478,9 +478,9 @@ def instructor_dashboard():
         return redirect(url_for('home'))
     
     instructor = get_logged_in_user()
-    instructor.view_personal_info()
+    info = instructor.view_personal_info()
     classes = instructor.get_class_table()
-    return render_template('instructor/instructor_dashboard.html', classes=classes)
+    return render_template('instructor/instructor_dashboard.html',info = info, classes=classes)
 
 # @app.route('/instructor/classes')
 # def view_classes():
@@ -530,6 +530,7 @@ def enroll():
     
     class_id = request.form.get('class_id')
     member_id = session['user_id']
+    print("CLASS:" + class_id)
     
     db.add_member_to_class(member_id, class_id)
     
@@ -542,7 +543,7 @@ def unenroll():
     
     class_id = request.form.get('class_id')
     member_id = session['user_id']
-    
+    print("CLASS:" + class_id)
     db.unenroll_from_class(member_id, class_id)
     
     return redirect(url_for('member_dashboard'))
@@ -555,14 +556,15 @@ def all_classes():
     classes = []
     enrolled_ids = []
     for item in result:
-        instructorName = db.view_personal_info(item['instructorid'])['name']
-        c = Class(item['classid'],
-                  instructorName,
-                  item['gymname'],
-                  item['classname'],
-                  item['starttime'],
-                  item['endtime'])
-        classes.append(c)
+        instructorName = db.get_instructor_name(item['instructor_id'])
+        c = Class(item['class_id'],
+                  item['instructor_id'],
+                  item['gym_name'],
+                  item['class_name'],
+                  item['start_time'],
+                  item['end_time'])
+        d = {'class': c, 'instructorName': instructorName[0]}
+        classes.append(d)
     for item in enrolled_classes:
         print(item)
         enrolled_ids.append(item[0])
@@ -604,7 +606,8 @@ def edit_class(class_id):
 
 @app.route('/classes/delete/<int:class_id>', methods=['GET'])
 def delete_class(class_id):
-    global gym_classes
+    user = get_logged_in_user()
+    gym_classes = user.get_og_class_table()
     gym_classes = [c for c in gym_classes if c.class_id != class_id]
     db.delete_class(class_id=class_id)
     flash('Class deleted successfully.', 'success')
@@ -620,64 +623,6 @@ def logout():
     return redirect(url_for('home'))
 
 
-
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if request.method == 'POST':
-#         email = request.form.get('email')
-#         name = request.form.get('name')
-#         phone = request.form.get('phone')
-#         st_name = request.form.get('st_name')
-#         city = request.form.get('city')
-#         state = request.form.get('state')
-#         zip_code = request.form.get('zip')  # renamed to avoid shadowing Python's zip()
-#         username = request.form.get('username')
-#         password = request.form.get('password')
-#         mem_type = request.form.get('memType')
-
-#         # Basic validation
-#         if not all([email, name, phone, st_name, city, state, zip_code, username, password, mem_type]):
-#             return render_template('register.html', error="All fields are required.")
-
-#         try:
-#             # Create address and insert into DB
-#             address = Address(
-#                 address_id=None,  # or None if auto-incremented
-#                 st_name=st_name,
-#                 city=city,
-#                 state=state,
-#                 zip=zip_code
-#             )
-#             address_id = address.add_address()
-
-#             # Create login and insert into DB
-#             login = Login(
-#                 login_id=None,  # or None if auto-incremented
-#                 username=username,
-#                 password=password
-#             )
-#             login_id = login.add_login()
-
-#             # Create user and insert into DB
-#             new_user = Person(
-#                 user_id=None,  # or None if auto-incremented
-#                 email=email,
-#                 name=name,
-#                 memtype=mem_type,
-#                 phone=phone,
-#                 address_id=address_id,
-#                 login_id=login_id
-#             )
-#             new_user.add_person()  # Assuming you have this method defined
-
-#             return redirect(url_for('home'))
-
-#         except Exception as e:
-#             # Log the error if needed
-#             print(f"Registration error: {e}")
-#             return render_template('register.html', error="An error occurred while creating your account. Please try again.")
-
-#     return render_template('register.html')
 
 @app.route('/my_enrollments')
 def my_enrollments():

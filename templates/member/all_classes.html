@@ -48,22 +48,22 @@
 {% else %}
     {% for c in classes %}
     <div class="class-card">
-        <div class="class-info"><strong>Name:</strong> {{ c.class_name}}</div>
-        <div class="class-info"><strong>Instructor:</strong> {{ c.instructor }}</div>
-        <div class="class-info"><strong>Location:</strong> Gym {{ c.gym_id }}</div>
-        <div class="class-info"><strong>Time:</strong> {{ c.start_time }} to {{ c.end_time }}</div>
+        <div class="class-info"><strong>Name:</strong> {{ c['class'].class_name}}</div>
+        <div class="class-info"><strong>Instructor:</strong> {{ c['instructorName'] }}</div>
+        <div class="class-info"><strong>Location:</strong> Gym {{ c['class'].gym_id }}</div>
+        <div class="class-info"><strong>Time:</strong> {{ c['class'].start_time }} to {{ c.end_time }}</div>
 
         {% if session.user_id %}
-            {% if c.class_id in enrolled_ids %} 
+            {% if c['class'].class_id in enrolled_ids %} 
             <form class="enroll-form" method="POST" action="{{ url_for('unenroll') }}">
-                <input type="hidden" name="class_id" value="{{ c.class_id }}">
+                <input type="hidden" name="class_id" value="{{ c['class'].class_id }}">
                 <button type="submit" class="enroll-btn">
                     Unenroll
                 </button>
             </form>
             {% else %}
             <form class="enroll-form" method="POST" action="{{ url_for('enroll') }}">
-                <input type="hidden" name="class_id" value="{{ c.class_id }}">
+                <input type="hidden" name="class_id" value="{{ c['class'].class_id }}">
                 <button type="submit" class="enroll-btn">
                     Enroll
                 </button>
