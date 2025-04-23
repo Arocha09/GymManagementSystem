@@ -509,9 +509,6 @@ class DB_Driver():
         try:
             self.cursor.execute(f"SELECT * FROM Gym WHERE adminid = {admin_id}")
             result = self.cursor.fetchall()
-            
-            
-        
             return result
         except Exception as e:
             self.client.rollback()
@@ -531,6 +528,27 @@ class DB_Driver():
         except Exception as e:
             self.client.rollback()
             print(f"Error updating close hours for gym {gym_id}:", e)
+    
+    def get_address_by_id(self, address_id: int) -> dict:
+        try:
+            self.cursor.execute(
+                """
+                SELECT addressid, stname, city, state, zip
+                  FROM address
+                 WHERE addressid = %s
+                """,
+                (address_id,)
+            )
+            row = self.cursor.fetchone()
+            if row is None:
+                return {}
+
+            keys = ['id', 'stname', 'city', 'state', 'zip']
+            return dict(zip(keys, row))
+
+        except Exception as e:
+            print(f"Error retrieving address {address_id}:", e)
+            return {}
 
     # SQL to get gym by id (admin only)
     def get_gym_by_id(self, gym_id: int) -> dict:
@@ -862,6 +880,73 @@ class DB_Driver():
             self.client.rollback()  # Undo the transaction if it failed
             print(f"Failed to add address: {st_name} {city} {state} {zip}: {e}")
             return None
+        
+    def add_gym_with_address(self,
+                             st_name: str,
+                             city: str,
+                             state: str,
+                             zip_code: str,
+                             gymname: str,
+                             gymopen: str,
+                             gymclose: str,
+                             adminid: int) -> None:
+        try:
+            self.cursor.execute(
+                """
+                INSERT INTO address (stname, city, state, zip)
+                VALUES (%s, %s, %s, %s)
+                RETURNING addressid
+                """,
+                (st_name, city, state, zip_code)
+            )
+            address_id = self.cursor.fetchone()[0]
+            self.cursor.execute(
+                """
+                INSERT INTO gym (gymname, gymopen, gymclose, adminid, addressid)
+                VALUES (%s, %s, %s, %s, %s)
+                """,
+                (gymname, gymopen, gymclose, adminid, address_id)
+            )
+            self.client.commit()
+            print("Gym and address created successfully.")
+        except Exception as e:
+            self.client.rollback()
+            print("Error adding gym with address:", e)
+
+    def update_gym_with_address(self,
+                                gym_id: int,
+                                gymname: str,
+                                gymopen: str,
+                                gymclose: str,
+                                st_name: str,
+                                city: str,
+                                state: str,
+                                zip_code: str) -> None:
+        try:
+            self.cursor.execute(
+                """
+                UPDATE gym
+                   SET gymname  = %s,
+                       gymopen  = %s,
+                       gymclose = %s
+                 WHERE gymid = %s
+                """,
+                (gymname, gymopen, gymclose, gym_id)
+            )
+            self.cursor.execute(
+                "SELECT addressid FROM gym WHERE gymid = %s",
+                (gym_id,)
+            )
+            row = self.cursor.fetchone()
+            if row:
+                address_id = row[0]
+                self.update_address(address_id, st_name, city, state, zip_code)
+
+            self.client.commit()
+            print(f"Gym {gym_id} and its address updated.")
+        except Exception as e:
+            self.client.rollback()
+            print(f"Error updating gym {gym_id}:", e)
         
     def close(self):
         self.cursor.close()

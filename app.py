@@ -118,31 +118,44 @@ def manage_gyms():
         return redirect(url_for('home'))
 
     raw = admin.driver.get_gym_list(admin.userid)
-    gyms = [{
-        'id':         r[0],
-        'name':       r[1],
-        'open_time':  r[2],
-        'close_time': r[3],
-        'address_id': r[5]
-    } for r in raw]
+    gyms = []
+    for gym in raw:
+        gymid, gymname, gymopen, gymclose,_, addressid = gym
+
+        
+        addr = admin.driver.get_address_by_id(addressid)
+        location = f"{addr.get('stname')}, {addr.get('city')}, {addr.get('state')} {addr.get('zip')}"
+
+        gyms.append({
+            'id':       gymid,
+            'name':     gymname,
+            'address': location,
+            'open_time':   gymopen,
+            'close_time': gymclose
+        })
+
 
     return render_template('admin/manage_gyms.html', gyms=gyms) 
 
 @app.route('/admin/gyms/add', methods=['GET','POST'])
 def add_gym():
     admin = get_logged_in_user()
-    if not admin or session.get('memType') != 'admin':
+    if not admin or session['memType']!='admin':
         return redirect(url_for('home'))
 
-    if request.method == 'POST':
-        name       = request.form['name']
-        open_time  = request.form['open_time']
-        close_time = request.form['close_time']
-        address_id = request.form['address_id']
-
-        admin.driver.add_gym(name, open_time, close_time, admin.userid, address_id)
-        flash('Gym added successfully!', 'success')
-        return redirect(url_for('admin/manage_gyms'))
+    if request.method=='POST':
+        db.add_gym_with_address(
+            request.form['st_name'],
+            request.form['city'],
+            request.form['state'],
+            request.form['zip'],
+            request.form['name'],       
+            request.form['open_time'],  
+            request.form['close_time'], 
+            admin.userid
+        )
+        flash('Gym & address added.', 'success')
+        return redirect(url_for('manage_gyms'))
     
     time_options = generate_time_options("00:00", "23:30", 30)
 
@@ -152,27 +165,31 @@ def add_gym():
 @app.route('/admin/gyms/edit/<int:gym_id>', methods=['GET','POST'])
 def edit_gym(gym_id):
     admin = get_logged_in_user()
-    if not admin or session.get('memType') != 'admin':
+    if not admin or session.get('memType')!='admin':
         return redirect(url_for('home'))
 
     if request.method == 'POST':
+        st_name  = request.form['st_name']
+        city     = request.form['city']
+        state    = request.form['state']
+        zip_code = request.form['zip']
         name       = request.form['name']
         open_time  = request.form['open_time']
         close_time = request.form['close_time']
-        address_id = request.form['address_id']
 
-        admin.driver.update_gym(gym_id, name, open_time, close_time, address_id)
-        flash('Gym updated successfully!', 'success')
-        return redirect(url_for('admin/manage_gyms'))
+        db.update_gym_with_address(
+            gym_id,
+            name, open_time, close_time,
+            st_name, city, state, zip_code
+        )
 
-    gym = admin.driver.get_gym_by_id(gym_id)
-    if not gym:
-        flash('Gym not found.', 'danger')
-        return redirect(url_for('admin/manage_gyms'))
-    
+        flash('Gym updated!', 'success')
+        return redirect(url_for('manage_gyms'))
+    gym = db.get_gym_by_id(gym_id)
+    address = admin.driver.get_address_by_id(gym['addressid'])
     time_options = generate_time_options("00:00", "23:30", 30)
 
-    return render_template('admin/edit_gym.html', gym=gym, time_options=time_options)
+    return render_template('admin/edit_gym.html', gym=gym,address=address,time_options=time_options,)
 
 
 @app.route('/admin/gyms/delete/<int:gym_id>')

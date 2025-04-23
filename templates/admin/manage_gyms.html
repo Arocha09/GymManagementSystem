@@ -16,7 +16,8 @@
                 <th>Gym ID</th>
                 <th>Name</th>
                 <th>Location</th>
-                <th>Status</th>
+                <th>Open Time</th>
+                <th>Close Time</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -25,8 +26,9 @@
             <tr>
                 <td>{{ gym.id }}</td>
                 <td>{{ gym.name }}</td>
-                <td>{{ gym.location }}</td>
-                <td>{{ gym.status }}</td>
+                <td>{{ gym.address }}</td>
+                <td>{{ gym.open_time }}</td>
+                <td>{{ gym.close_time}}</td>
                 <td>
                     <a href="{{ url_for('edit_gym', gym_id=gym.id) }}" class="btn btn-primary btn-sm">Edit</a>
                     <a href="{{ url_for('delete_gym', gym_id=gym.id) }}" class="btn btn-danger btn-sm">Delete</a>
