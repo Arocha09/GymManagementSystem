@@ -54,12 +54,21 @@
         <div class="class-info"><strong>Time:</strong> {{ c.start_time }} to {{ c.end_time }}</div>
 
         {% if session.user_id %}
+            {% if c.class_id in enrolled_ids %} 
+            <form class="enroll-form" method="POST" action="{{ url_for('unenroll') }}">
+                <input type="hidden" name="class_id" value="{{ c.class_id }}">
+                <button type="submit" class="enroll-btn">
+                    Unenroll
+                </button>
+            </form>
+            {% else %}
             <form class="enroll-form" method="POST" action="{{ url_for('enroll') }}">
                 <input type="hidden" name="class_id" value="{{ c.class_id }}">
                 <button type="submit" class="enroll-btn">
-                    {% if c.class_id in enrolled_ids %}Unenroll{% else %}Enroll{% endif %}
+                    Enroll
                 </button>
             </form>
+            {% endif %}
         {% endif %}
     </div>
     {% endfor %}
