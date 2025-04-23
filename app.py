@@ -540,13 +540,15 @@ def all_classes():
     result = db.get_class_info()
     classes = []
     for item in result:
+        instructorName = db.view_personal_info(item['instructorid'])['name']
         c = Class(item['classid'],
-                  item['instructorid'],
-                  item['gymid'],
+                  instructorName,
+                  item['gymname'],
                   item['classname'],
                   item['starttime'],
                   item['endtime'])
         classes.append(c)
+
     return render_template('member/all_classes.html',
                          classes=classes,
                         )
