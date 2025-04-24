@@ -373,29 +373,30 @@ def manage_classes():
     
     return render_template('admin/manage_classes.html', classes=classes)  # your logic here
 
-@app.route('/classes', methods=['GET', 'POST'])
+@app.route('/admin/classes/add', methods=['GET', 'POST'])
 def add_class():
-    #TODO: Finish implementation
     admin = get_logged_in_user()
     if not admin:
         return redirect(url_for('home'))
 
     if request.method == 'POST':
-        # Get form data
+        instructor = request.form['instructor']
+        gym_id     = request.form['gym_id']
+        class_name = request.form['class_name']
+        start_time = request.form['start_time']
+        end_time   = request.form['end_time']
 
-        instructor = request.form.get('instructor')
-        gym_id = request.form.get('gym_id')
-        start_time = request.form.get('start_time')
-        end_time = request.form.get('end_time')
-        class_name = request.form.get('class_name')
+        admin.add_class(class_name, instructor, gym_id, start_time, end_time)
+        return redirect(url_for('manage_classes'))
 
-        db.add_class(instructor, gym_id, class_name, start_time, end_time)
-
-    
-        return redirect(url_for('add_class'))
-
-    # For GET requests, just show the form
-    return render_template('admin/manage_classes.html', admin=admin)
+    # GET: we need to populate the dropdowns
+    instructors = admin.get_instructors()  # returns list of Person objects with memType='instructor'
+    gyms        = admin.get_gyms()         # returns list of Gym objects
+    return render_template(
+        'admin/add_class.html',
+        instructors=instructors,
+        gyms=gyms
+    )
 
 
 @app.route('/admin/facilities')
