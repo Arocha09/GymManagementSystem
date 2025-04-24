@@ -96,6 +96,24 @@ class Administrator(Person):
         driver.close()
         return gym_list
     
+    def get_instructors(self):
+        driver = DB_Driver()
+        result = driver.get_instructor_info(self.userid)
+        instructor_list = []
+        for res in result:
+            instructor = Person(
+                user_id=res[0],
+                email=res[1],
+                name=res[2],
+                memtype=res[3],
+                phone=res[4],
+                address_id=res[5],
+                login_id=res[6]
+            )
+            instructor_list.append(instructor)
+        driver.close()
+        return instructor_list
+    
     def add_class(self, class_name, instructor_id, gym_id, start_time, end_time):
         driver = DB_Driver()
         driver.add_class(class_name, instructor_id, gym_id, start_time, end_time)
