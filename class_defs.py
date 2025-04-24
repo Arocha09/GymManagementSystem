@@ -98,7 +98,7 @@ class Administrator(Person):
     
     def get_instructors(self):
         driver = DB_Driver()
-        result = driver.get_instructor_info(self.userid)
+        result = driver.get_instructor_info()
         instructor_list = []
         for res in result:
             instructor = Person(
