@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h1>Add New Class</h1>
+  <form method="post">
+    <div class="form-group">
+      <label for="class_name">Class Name</label>
+      <input type="text" name="class_name" id="class_name" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="instructor">Instructor</label>
+      <select name="instructor" id="instructor" class="form-control" required>
+        {% for instr in instructors %}
+          <option value="{{ instr.userID }}">{{ instr.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="gym_id">Gym</label>
+      <select name="gym_id" id="gym_id" class="form-control" required>
+        {% for gym in gyms %}
+          <option value="{{ gym.gymID }}">{{ gym.gymName }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="start_time">Start Time</label>
+      <input type="time" name="start_time" id="start_time" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="end_time">End Time</label>
+      <input type="time" name="end_time" id="end_time" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{{ url_for('manage_classes') }}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}
