@@ -95,6 +95,16 @@ class Administrator(Person):
             gym_list.append(gym)
         driver.close()
         return gym_list
+    
+    def add_class(self, class_name, instructor_id, gym_id, start_time, end_time):
+        driver = DB_Driver()
+        driver.add_class(class_name, instructor_id, gym_id, start_time, end_time)
+        driver.close()
+    
+    def delete_class(self, class_id):
+        driver = DB_Driver()
+        driver.delete_class(class_id)
+        driver.close()
 
 class Instructor(Person):
     def add_member_to_class(self, member_id, class_id):
